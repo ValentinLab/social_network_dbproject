@@ -1,0 +1,136 @@
+.titre1 {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 18pt; color: #000000; text-align: center}
+.titre2 { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 16pt; color: #000000}
+.titre3 { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14pt; color: #000000 }
+.titre4 { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12pt; color: #000000 }
+.titre5 {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: bold; color: #000000}
+.definition {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; color: #000000}
+.exemple {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; color: #000000; font-style: italic}
+.objectif {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; font-style: italic; color: #000000}
+.remarque {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; color: #000000}
+.alerte {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; color: #000000}
+.petit {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; color: #000000}
+a:link {  color: #0000FF; text-decoration: none;}
+a:visited {  color: #0000FF; text-decoration: none;}
+a:hover {  color: #0000FF; text-decoration: underline;}
+blockquote {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; color: #000000}
+.code { font-family: "Courier New", Courier, mono; font-size: 10pt; color: #000000 }
+
+body {  
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 10pt; 
+	color: #000000;
+	background: url(../images/fond.gif) #FFFFCC;
+}
+
+p {
+	padding: 5px 10px; 
+	text-align: justify;
+}
+
+#bcPage {
+	width: 800px;	
+	margin: 20px auto;
+	background-color: #FFFFCC;
+	border: solid 2px #101C26;
+	position: relative;
+}
+
+#bcTitre {
+	position: relative;
+	background: url(../images/bandeau.gif) no-repeat #101C26;
+	padding-top: 70px;
+	height: 100px;
+	color: #FFFFFF;
+}
+
+#objectifs {
+	//border: 2px solid #BB0000;
+	color: #BB0000;		
+	width: 750px;
+	font-size: 11pt;
+	font-weight: bold;
+	margin: 10px auto 20px auto;
+}
+
+
+.NoTP {
+	font-size: 14pt;
+	font-weight: bold; 	
+	margin-bottom: 10px;
+	color: #EBEBEB;	
+	width: 70px;
+	position: absolute;
+	right: 10px;
+	bottom: 0px;
+}
+
+h1 {
+	clear: both;
+	font-size: 16pt;
+	font-weight: bolder;
+	text-align: center;	
+}
+
+.soustitre {
+	font-size: 14pt;		
+}
+
+
+h2 {
+	clear: both;
+	font-size: 14pt;
+	font-weight: normal;
+	background: #F79645;
+	color: #FFFFFF;
+	text-align: center;	
+	padding: 10px;
+}
+
+
+h3 {
+	font-size: 12pt;
+	font-weight: normal;
+	background: #FFFF99;
+	color: #000000;
+	padding: 5px 0px 5px 30px;
+	text-align: left;	
+}
+
+
+ul {
+	list-style-image: url(../images/coche_verte.gif);	
+}
+
+ol.flecherouge, ul.flecherouge {
+	margin-top: 5px;
+	list-style-image: url(../images/flecherouge.gif);	
+}
+
+li {
+	margin-bottom: 10px;
+	text-align: justify;
+	padding-right: 10px;	
+}
+
+.listenormale {
+	margin-top: -10px;
+	list-style-image: none;
+	list-style-type: disc;	
+}
+
+
+img {
+	display: block;
+	margin: 10px auto;
+	border: 0px;	
+}
+
+.imginline {
+	display: inline;
+	margin: 0px 2px;	
+}
+
+.flotteGauche {
+	float: left;	
+	margin: 5px 10px 5px 10px;
+}

@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><!-- DW6 --><head>
+<title>Bases de Données - Licence 1/Semestre 2 - TP 7-8 : Construire une mini-application de bases de données avec Java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script language="JavaScript" src="doc_files/fonctions.html">
+</script>
+<link rel="stylesheet" href="doc_files/cours.css">
+<style type="text/css">
+code {
+	color: #BB0000;
+	font-weight: bold;	
+}
+</style>
+</head>
+<body>
+
+
+<div id="bcPage">
+
+	<div id="bcTitre">
+		<p class="NoTP">TP 7-8</p>
+		<h1>Connexion Java ↔ MySQL</h1>
+		<h1 class="soustitre">- Découverte de l'environnement de travail -</h1>		
+	</div>
+	
+	<p id="objectifs">
+		Objectifs : 
+			</p><ul>	
+				<li>Utiliser une bibliothèque Java pour communiquer avec une base de données MySQL.
+				</li><li>Connaître et comprendre les mécanismes d'interrogation d'une base de données dans une application.
+			</li></ul> 
+	<p></p>
+
+
+	<h2>Quelques remarques avant de commencer</h2>
+	
+	<p>Ce TP vous fera découvrir l'utilisation de Java pour interroger une base de données (envoyer des 
+	requêtes, et traiter/afficher les résultats). 
+	</p>
+	
+	<p>Pour ce faire, nous allons utiliser une bibliothèque Java simplifiée qui agira comme une 
+	façade, vous permettant de réaliser simplement des actions qui sont normalement plus complexes
+	à mettre en oeuvre. 
+	</p>
+	
+	<p>Prenez le temps de bien lire la description de la bibliothèque à utiliser, avant de vous jeter
+	sur le sujet du TP.</p>
+	
+	<h2>Description de la bibliothèque Java ↔ MySQL</h2>
+	
+    <p>Avant de commencer, assurez-vous d'avoir récupéré les fichiers <a href="http://moodle.univ-fcomte.fr/pluginfile.php/165059/mod_resource/content/23/TP/TP7-8/BD.class">BD.class</a>
+    et <a href="http://moodle.univ-fcomte.fr/pluginfile.php/165059/mod_resource/content/23/TP/TP7-8/mysql-connector-java.jar">mysql-connector-java.jar</a>, et de les avoir placés dans 
+    votre répertoire de travail, dans le dossier où vous allez écrire votre programme Java.    
+     </p>		
+     
+     <p>
+     La bibliothèque BD vous permettra de manipuler aisément deux types d'entités : </p>
+     <ul>
+     	<li>des <strong>connexions</strong> à la base de données. Ces entités permettent de savoir avec 
+     	quelle base de données on travaille. En règle générale, nous travaillerons toujours avec la même 
+     	base, mais sachez qu'il est possible d'ouvrir plusieurs connexions simultanées avec des bases 
+     	différentes. Il est toutefois déconseillé d'ouvrir plusieurs connexions avec la même base.
+     	</li><li>des <strong>résultats</strong> (ensembles d'enregistrements) qui sont comme des tableaux à 
+     	deux dimensions indexés sur les noms des attributs renvoyés par une requête. Ces tableaux peuvent 
+     	être parcourus ligne-par-ligne (enregistrement-par-enregistrement). 
+     	Pour chaque enregistrement, il est possible de récupérer la valeur d'un attribut.  
+     </li></ul>
+     <p>Ces deux entités sont référencés par des identifiants (entiers) qui seront utilisés pour toute 
+     manipulation.
+     </p>
+     
+    <h3><a name="BD"></a>Connexion à la base de données. </h3>
+    
+	<ul style="list-style-type: circle; list-style-image: none;">
+		<li>
+		<p style="margin-bottom: 0px;"><code>int BD.ouvrirConnexion(String adresse, String bd, String login, String password)</code></p>
+		<p style="margin-top: 0px;">Ouvre une connexion à la base de données nommée <code>bd</code> en se connectant au serveur web 
+		<code>adresse</code>, avec le nom d'utilisateur <code>login</code> et le mot de passe <code>password</code>.<br>
+		Cette fonction renvoie un entier positif ou nul identifiant la connexion ouverte (à réutiliser par la suite).<br>
+		En cas d'erreur, la valeur -1 est renvoyée.   
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>void BD.fermerConnexion(int connexion)</code></p>
+		<p style="margin-top: 0px;">Ferme la connexion identifiée par <code>connexion</code> précédemment ouverte.
+		</p>  
+	</li></ul>
+	
+	<h3>Exécution de requêtes et traitement des résultats.</h3>
+	<ul style="list-style-type: circle; list-style-image: none;">
+		<li>
+		<p style="margin-bottom: 0px;"><code>int BD.executerSelect(int connexion, String sql)</code></p>
+		<p style="margin-top: 0px;">Exécute une requête de type SELECT sur la base de données. <br>
+		Cette fonction renvoie un entier positif ou nul identifiant le résultat associé à la requête. La position courante
+		du parcours du résultat est avant le premier enregistrement. <br>
+		En cas d'erreur, la valeur -1 est renvoyée.   
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>int BD.executerUpdate(int connexion, String sql)</code></p>
+		<p style="margin-top: 0px;">Exécute une requête de type INSERT, UPDATE ou DELETE sur la base de données. <br>
+		Cette fonction renvoie un entier positif ou nul indiquant le nombre d'enregistrements impactés par l'exécution de la requête.<br>
+		Si la requête réalisait un INSERT d'un numéro automatique, il renvoie 
+le numéro automatique généré pour le nouvel enregistrement. <br>
+		En cas d'erreur, la valeur -1 est renvoyée. 
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>boolean BD.suivant(int res)</code></p>
+		<p style="margin-top: 0px;">Passe à l'enregistrement suivant pour le résultat <code>res</code>. <br>
+		Cette fonction renvoie <code>true</code> si l'enregistrement suivant a pu être atteint (s'il existe), <code>false</code> en cas d'erreur. 
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>boolean BD.reinitialiser(int res)</code></p>
+		<p style="margin-top: 0px;">Ré-initialise le parcours des enregistrements en se plaçant avant le premier 
+		enregistrement du résultat <code>res</code>.<br>
+		Cette fonction renvoie <code>true</code> si la réinitialisation a pu être effectuée, <code>false</code> en cas d'erreur. 
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>void BD.fermerResultat(int res)</code></p>
+		<p style="margin-top: 0px;">Libère la mémoire du résultat <code>res</code>, et supprime ce résultat ; son identifiant ne 
+		sera plus réutilisable par la suite (attention, il pourra être réattribué par la suite). 
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>String BD.attributString(int res, String att)</code></p>
+		<p style="margin-top: 0px;">Renvoie la valeur de l'attribut <code>att</code> pour l'enregistrement courant du résultat 
+		<code>res</code> sous la forme d'une chaîne de caractères. 
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>int BD.attributInt(int res, String att)</code></p>
+		<p style="margin-top: 0px;">Renvoie la valeur de l'attribut <code>att</code> pour l'enregistrement courant du résultat 
+		<code>res</code> sous la forme d'un entier. 
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>long BD.attributLong(int res, String att)</code></p>
+		<p style="margin-top: 0px;">Renvoie la valeur de l'attribut <code>att</code> pour l'enregistrement courant du résultat 
+		<code>res</code> sous la forme d'un entier long. 
+		</p>
+	</li></ul>
+	
+	<h3>Manipulation de dates</h3>
+	<ul style="list-style-type: circle; list-style-image: none;">
+		<li>
+		<p style="margin-bottom: 0px;"><code>long BD.maintenant()</code></p>
+		<p style="margin-top: 0px;">Renvoie un entier long représentant la date du jour sous la forme du nombre de millisecondes
+		écoulées depuis le 1er janvier 1970 à minuit. 
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>long BD.date(int jour, int mois, int annee, int heures, int minutes, int secondes)</code></p>
+		<p style="margin-top: 0px;">Renvoie un entier long représentant la date spécifiée par les valeurs passées en paramètres. 
+		</p>  		
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>int BD.jour(long d)</code></p>
+		<p style="margin-top: 0px;">Renvoie un entier représentant le numéro du jour (1-31) à partir d'une date <code>d</code> spécifiée par un entier long. 
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>int BD.mois(long d)</code></p>
+		<p style="margin-top: 0px;">Renvoie un entier représentant le numéro du mois (1-12) à partir d'une date <code>d</code> spécifiée par un entier long. 
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>int BD.annee(long d)</code></p>
+		<p style="margin-top: 0px;">Renvoie un entier représentant une année à partir d'une date <code>d</code> spécifiée par un entier long. 
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>int BD.heures(long d)</code></p>
+		<p style="margin-top: 0px;">Renvoie un entier représentant les heures (0-23) à partir d'une date <code>d</code> spécifiée par un entier long. 
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>int BD.minutes(long d)</code></p>
+		<p style="margin-top: 0px;">Renvoie un entier représentant les minutes (0-59) à partir d'une date <code>d</code> spécifiée par un entier long. 
+		</p>  
+		</li><li>
+		<p style="margin-bottom: 0px;"><code>int BD.secondes(long d)</code></p>
+		<p style="margin-top: 0px;">Renvoie un entier représentant les secondes (0-59) à partir d'une date <code>d</code> spécifiée par un entier long. 
+		</p>  
+    </li></ul>
+    
+    
+    <h3>Temporisation</h3>
+    
+	<ul style="list-style-type: circle; list-style-image: none;">
+		<li>
+		<p style="margin-bottom: 0px;"><code>void BD.pause(int m)</code></p>
+		<p style="margin-top: 0px;">Met le programme en pause pour une durée de <code>m</code> millisecondes.</p>  
+	</li></ul>
+    
+    <h3>Un petit exemple</h3>
+    
+    <p>L'extrait de code Java ci-dessous vous donne une idée du fonctionnement de la bibliothèque : </p>
+
+	<p>    
+		<code style="color: black; font-weight: normal;"><strong>int</strong> co = BD.ouvrirConnexion(<i>"172.20.XXX.YYY"</i>,<i>"maBase"</i>,<i>"monLogin"</i>,<i>"monMotDePasse"</i>);<br>
+		<strong>int</strong> res = BD.executerSelect(co, <i>"SELECT * FROM maTable"</i>);<br>
+		<strong>while</strong> (BD.suivant(res)) {<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;Ecran.afficher(<i>"Valeur de attribut1 (entier) = "</i>, BD.attributInt(res,<i>"attribut1"</i>));<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;Ecran.afficher(<i>" et valeur de attribut2 (chaine) = "</i>, BD.attributString(res,<i>"attribut2"</i>));<br>    
+		&nbsp;&nbsp;&nbsp;&nbsp;Ecran.sautDeLigne();<br>
+		}<br>     
+		BD.fermerResultat(res);<br>
+		BD.fermerConnexion(co);<br>
+		</code>
+	</p>
+	    
+	<h2>Travail à réaliser</h2>
+	
+	<p>Dans ce TP, vous devrez réaliser une application de chat, permettant aux utilisateurs de discuter entre eux en direct. </p>
+	
+	<p>Cette application se présentera sous la forme de deux programmes 
+Java : le premier permettant de récupérer, à intervalles 
+	réguliers, les messages postés par les participants au chat, et le 
+second permettant de saisir des messages. Ces deux programmes
+	pourront être lancés en parallèle. </p>
+	
+	<p>Ces deux applications travailleront avec la base de données nommée <code>chat</code>, hébergée sur le serveur 
+	<code>172.20.128.64</code>. Le login est <code>chat_user</code> ; le mot de passe est <code>chat_pass</code>.  
+	
+	</p><p>La structure de la base de données <code>chat</code> est simplifiée à l'extrème : elle ne contient qu'une seule table 
+	nommée <code>message</code> composée des attributs suivants :</p>
+	<ul style="list-style-type: circle; list-style-image: none;">
+		<li><code>msgId</code> : identifiant du message (entier - numéro automatique) - clé primaire de la table
+		</li><li><code>msgTexte</code> : texte du message (chaîne - 255 caractères maxi)
+		</li><li><code>msgPseudo</code> : pseudo de l'auteur (chaîne - 20 caractères maxi)
+		</li><li><code>msgDate</code> : horodatage du message (entier long)
+	</li></ul>
+	
+	<p>Ci-dessous un petit exemple de l'utilisation du chat (les deux fenêtres de gauche représentent deux utilisateurs différents, 
+	la fenêtre de droite montre l'affichage des messages reçus sur le chat) :</p> 
+	<a href="http://moodle.univ-fcomte.fr/pluginfile.php/165059/mod_resource/content/23/TP/images/tp13.png" target="_blank" style="text-align: center;"><img src="doc_files/tp13.png" style="width: 750px; height: 422px; border: solid 1px #000;"></a>
+
+	
+	<h3>Quelques indications/consignes</h3>
+	
+	<ul>
+		<li>Le premier programme boucle sur l'interrogation de la base de données pour récupérer les derniers messages depuis
+		la récupération précédente. Pour ne pas trop solliciter le serveur, on temporisera le programme en mettant le programme
+		en pause toutes les 3 secondes (utilisez la fonction <code>BD.pause(3000);</code>).
+		</li><li>Le second programme commencera par demander son pseudo à l'utilisateur, puis bouclera sur des saisies de messages. 
+		La commande <code>/q</code> (tapée comme message) permettra de quitter l'application.  
+		</li><li>Les messages affichés devront apparaitre 1 par ligne, sous la forme : <br>
+		<code>HH:MM:SS - &lt;Pseudo&gt; : &lt;Texte&gt;</code>   
+		</li><li>Veillez à bien fermer la connexion à la base de données, et à libérer les ressources utilisées, à la fin de vos programmes. 
+		</li><li>Attention aux caractères spéciaux ! Les <code>'</code> quotes, servant de délimiteur de chaînes en MySQL devront 
+		être protégées par un <code>\'</code> dans le texte des messages avant insertion dans la base.
+	</li></ul>
+
+	<h3>Pour les meilleurs, quelques améliorations possibles...</h3>
+
+	<ul>
+		<li>Indiquer la connexion/déconnexion d'un utilisateur au chat. <br>
+		<code>*** <i>Pseudo</i> s'est (dé)connecté(e) ***</code>
+		</li><li>Pour éviter de remplir à grande vitesse la base de données, 
+on peut supprimer les messages plus anciens, à intervalles réguliers.  
+	</li></ul>
+
+	</div>
+	
+	
+
+</body></html>
+<!-- #BeginEditable "(code aprs la balise HTML)" -->
+<!-- #EndEditable -->
