@@ -49,4 +49,14 @@ public class Library {
 		}
 	}
 
+	/**
+	 * Get an appoitment with a folloed user
+	 * 
+	 * @param connection Connection to the DB
+	 * @param currentUser User currently connected
+	 */
+	public static void getAppointment(int connection, String currenString) {
+
+	}
+
 }
