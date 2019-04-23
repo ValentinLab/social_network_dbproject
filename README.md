@@ -3,6 +3,7 @@ Gaming Social Network (Database Project - Topic N°3)
 
 ## About
 Development of an application that simulates a social network about video games.
+
 Goals to reach:
 * Creation of an account
 * Login system
