@@ -16,7 +16,8 @@ public class Library {
 	public static void followUser(int connection, String currentUser) {
 		// Variables
 		String otherUser;
-		int resultQuerry;
+		int selectQuerry;
+		int updateQuery;
 
 		// Title
 		Ecran.afficherln("### SUIVI D'UN UTILISATEUR ###\n");
@@ -31,12 +32,17 @@ public class Library {
 		Ecran.sautDeLigne();
 
 		// Querry
-		resultQuerry = BD.executerSelect(connection, "SELECT * FROM utilisateur WHERE utLogin = '" + otherUser + "'");
+		selectQuerry = BD.executerSelect(connection, "SELECT * FROM utilisateur WHERE utLogin = '" + otherUser + "'");
 
 		// Checking of the querry result
-		if(BD.suivant(resultQuerry)) {
-			Ecran.afficherln("Il existe !");
-		} else {
+		if(BD.suivant(selectQuerry)) { // the user exists
+			selectQuerry = BD.executerSelect(connection, "SELECT * FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suSuivi = '" + otherUser + "'");
+			if(BD.suivant(selectQuerry)) {
+				Ecran.afficherln("Vous suivez déjà cet utilisateur...");
+			} else {
+				updateQuery = BD.executerUpdate(connection, "INSERT INTO suivi (suSuiveur, suSuivi, suRDV) VALUES ('" + currentUser + "', '" + otherUser + "', 0)");
+			}
+		} else { // the user does not exists
 			Ecran.afficherln("L'utilisateur " + otherUser + " n'existe pas...");
 		}
 	}
