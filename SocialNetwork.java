@@ -1,5 +1,5 @@
 /**
- * Social Network (DataBase Project - Topic N°3)
+ * Social Network (Database Project - Topic N°3)
  * SocialNetwork.java
  * 
  * @author Fabian Devel, Valentin Perignon
