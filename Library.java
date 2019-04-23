@@ -1,3 +1,5 @@
+import java.security.spec.ECParameterSpec;
+
 /**
  * Social Network (DataBase Project - Topic N°3)
  * Library.java - all functions
@@ -47,6 +49,15 @@ public class Library {
 			Ecran.afficherln("/!\\ ATTENTION ! L'utilisateur " + otherUser + " n'existe pas...");
 			followUser(connection, currentUser);
 		}
+		BD.fermerResultat(selectQuerry);
+	}
+
+	private static void putStringQuerryInTab(String[] tab, int querry, String attribut) {
+		// Treatment
+		for(int i=0; i<tab.length; i++) {
+			BD.suivant(querry);
+			tab[i] = BD.attributString(querry, attribut);
+		}
 	}
 
 	/**
@@ -55,8 +66,73 @@ public class Library {
 	 * @param connection Connection to the DB
 	 * @param currentUser User currently connected
 	 */
-	public static void getAppointment(int connection, String currenString) {
+	public static void getAppointment(int connection, String currentUser) {
+		// Variables
+		String[] otherUsers;
+		int nbFollowedUsers;
+		int nbUserToMeet = -1;
+		int selectQuerry;
+		int updateQuery;
 
+		// Querry (get the number of users followed by the current user)
+		selectQuerry = BD.executerSelect(connection, "SELECT COUNT(*) AS NbUsers FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV = 0");
+
+		// Checking of the querry result
+		BD.suivant(selectQuerry);
+		nbFollowedUsers = BD.attributInt(selectQuerry, "NbUsers");
+		BD.fermerResultat(selectQuerry);
+
+		// Select the user and get an appoitment
+		otherUsers = new String[nbFollowedUsers];
+		switch(nbFollowedUsers) {
+			case 0:
+				Ecran.afficherln("Vous ne suivez aucun utilisateur ou vous avez déjà proposé des rendez-vous à chacun d'entre eux, il est donc impossible de proposer un rendez-vous.\n");
+				break;
+			case 1:
+				selectQuerry = BD.executerSelect(connection, "SELECT suSuivi FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV = 0");
+				putStringQuerryInTab(otherUsers, selectQuerry, "suSuivi");
+
+				// choice of the user
+				char answer;
+				Ecran.afficherln("Vous ne suivez que l'utilisateur " + otherUsers[0] + ".");
+				Ecran.afficher("Souhaitez-vous lui proposer un rendez-vous ? [Y/N] ");
+				answer = Clavier.saisirChar();
+				if(answer == 'Y') {
+					nbUserToMeet = 0;
+				}
+				Ecran.sautDeLigne();
+				break;
+			default:
+				selectQuerry = BD.executerSelect(connection, "SELECT suSuivi FROM suivi WHERE suSuiveur = '" + currentUser + "'");
+				putStringQuerryInTab(otherUsers, selectQuerry, "suSuivi");
+
+				// choice of the user
+				Ecran.afficherln("Voici la liste des utilisateurs que vous suivez:");
+				Ecran.afficherln(" 0 - Personne");
+				for(int i=0; i<nbFollowedUsers; i++) {
+					Ecran.afficherln(" " + (i+1) + " - " + otherUsers[i]);
+				}
+				do {
+					if(nbUserToMeet > nbFollowedUsers) {
+						Ecran.afficherln("/!\\ ATTENTION ! Ce numéro n'est pas valide.");
+					}
+					Ecran.afficher("Veuillez saisir le numéro de l'utilisateur que vous souhaitez rencontrer: ");
+					nbUserToMeet = Clavier.saisirInt();
+					Ecran.sautDeLigne();
+				} while(nbUserToMeet > nbFollowedUsers);		
+				nbUserToMeet = nbUserToMeet - 1;
+				break;
+		}
+		BD.fermerResultat(selectQuerry);
+
+		// Get an appointment
+		if(nbUserToMeet < 0) {
+			Ecran.afficherln("Vous n'avez proposé aucun rendez-vous.");
+		} else {
+			updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 1 WHERE suSuiveur = '" + currentUser + "' AND suSuivi = '" + otherUsers[nbUserToMeet] + "'");
+			BD.fermerResultat(updateQuery);
+			Ecran.afficherln("Vous avez proposé un rendez-vous à " + otherUsers[nbUserToMeet]);
+		}
 	}
 
 }

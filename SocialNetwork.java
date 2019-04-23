@@ -21,8 +21,13 @@ public class SocialNetwork {
 		// Database connection
 		connection = BD.ouvrirConnexion("localhost", "reseau", "root", "");
 
+		/*
 		// Following of a user
 		Library.followUser(connection, currentUser);
+		*/
+
+		// Get an appointment with a user
+		Library.getAppointment(connection, currentUser);
 	}
 
 }
