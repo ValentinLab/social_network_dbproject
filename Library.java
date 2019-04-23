@@ -52,6 +52,13 @@ public class Library {
 		BD.fermerResultat(selectQuerry);
 	}
 
+	/**
+	 * Put all string resultats from a query in a tab
+	 * 
+	 * @param tab The tab
+	 * @param querry The querry
+	 * @param attribut The attribut put in the tab
+	 */
 	private static void putStringQuerryInTab(String[] tab, int querry, String attribut) {
 		// Treatment
 		for(int i=0; i<tab.length; i++) {
@@ -94,20 +101,21 @@ public class Library {
 
 				// choice of the user
 				char answer;
-				Ecran.afficherln("Vous ne suivez que l'utilisateur " + otherUsers[0] + ".");
-				Ecran.afficher("Souhaitez-vous lui proposer un rendez-vous ? [Y/N] ");
+				Ecran.afficherln("Vous ne pouvez proposer un rendez-vous qu'à l'utilisateur " + otherUsers[0] + ".");
+				Ecran.afficher("Souhaitez-vous le faire ? [Y/N] ");
 				answer = Clavier.saisirChar();
 				if(answer == 'Y') {
 					nbUserToMeet = 0;
 				}
 				Ecran.sautDeLigne();
+				BD.fermerResultat(selectQuerry);
 				break;
 			default:
 				selectQuerry = BD.executerSelect(connection, "SELECT suSuivi FROM suivi WHERE suSuiveur = '" + currentUser + "'");
 				putStringQuerryInTab(otherUsers, selectQuerry, "suSuivi");
 
 				// choice of the user
-				Ecran.afficherln("Voici la liste des utilisateurs que vous suivez:");
+				Ecran.afficherln("Voici la liste des utilisateurs auxquels vous pouvez proposer un rendez-vous:");
 				Ecran.afficherln(" 0 - Personne");
 				for(int i=0; i<nbFollowedUsers; i++) {
 					Ecran.afficherln(" " + (i+1) + " - " + otherUsers[i]);
@@ -116,14 +124,14 @@ public class Library {
 					if(nbUserToMeet > nbFollowedUsers) {
 						Ecran.afficherln("/!\\ ATTENTION ! Ce numéro n'est pas valide.");
 					}
-					Ecran.afficher("Veuillez saisir le numéro de l'utilisateur que vous souhaitez rencontrer: ");
+					Ecran.afficher("Numéro de l'utilisateur que vous souhaitez rencontrer: ");
 					nbUserToMeet = Clavier.saisirInt();
 					Ecran.sautDeLigne();
 				} while(nbUserToMeet > nbFollowedUsers);		
 				nbUserToMeet = nbUserToMeet - 1;
+				BD.fermerResultat(selectQuerry);
 				break;
 		}
-		BD.fermerResultat(selectQuerry);
 
 		// Get an appointment
 		if(nbUserToMeet < 0) {
