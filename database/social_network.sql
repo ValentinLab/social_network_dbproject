@@ -18,7 +18,6 @@ USE `reseau`;
 
 /*Table structure for table `utilisateur` */
 
-DROP TABLE IF EXISTS `utilisateur`;
 
 CREATE TABLE `utilisateur` (
   `utLogin` varchar(30) NOT NULL,
