@@ -15,23 +15,21 @@ public class Library {
 	 */
 	public static void followUser(int connection, String currentUser) {
 		// Variables
-		String otherUser;
+		String otherUser = "";
 		int selectQuerry;
 		int updateQuery;
 
-		// Title
-		Ecran.afficherln("### SUIVI D'UN UTILISATEUR ###\n");
-
-		// Other login entry
-		Ecran.afficher("Veuillez-saisir le login de l'utilisateur à suivre: ");
-		otherUser = Clavier.saisirString();
-		while(otherUser.equals(currentUser)) {
-			Ecran.afficher("Veuillez-saisir le login de l'utilisateur à suivre (différent de vous): ");
+		// Login of user to follow entry
+		do {
+			if(otherUser.equals(currentUser)) {
+				Ecran.afficherln("/!\\ ATTENTION ! Vous devez entrer un login différent du votre...");
+			}
+			Ecran.afficher("Veuillez saisir le login de l'utilisateur à suivre: ");
 			otherUser = Clavier.saisirString();
-		}
-		Ecran.sautDeLigne();
+			Ecran.sautDeLigne();
+		} while(otherUser.equals(currentUser));
 
-		// Querry
+		// Querry (check if the user exits)
 		selectQuerry = BD.executerSelect(connection, "SELECT * FROM utilisateur WHERE utLogin = '" + otherUser + "'");
 
 		// Checking of the querry result

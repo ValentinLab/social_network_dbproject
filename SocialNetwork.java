@@ -15,11 +15,11 @@ public class SocialNetwork {
 		/** Login of the user currently connected */
 		String currentUser;
 
+			// /!\ DEBUG
+			currentUser = "Valentin";
+
 		// Database connection
 		connection = BD.ouvrirConnexion("localhost", "reseau", "root", "");
-
-			// DEBUG
-			currentUser = "Valentin";
 
 		// Following of a user
 		Library.followUser(connection, currentUser);
