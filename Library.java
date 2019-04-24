@@ -166,23 +166,37 @@ public class Library {
 		BD.suivant(selectQuerry);
 		nbFavoriteGames = BD.attributInt(selectQuerry, "nbGames");
 		BD.fermerResultat(selectQuerry);
-
-		// Querry (get the list of favorite games)
-		selectQuerry = BD.executerSelect(connection, "SELECT jeTitre FROM jeu WHERE jeJoueur = '" + currentUser + "'");
 		
 		// Display of favorite games
 		favoriteGames = new String[nbFavoriteGames];
 		switch(nbFavoriteGames) {
-			case 0:
-				Ecran.afficherln("Vous n'aimez aucun jeu pour le moment...");
+			case 0: // no favorite game
+				Ecran.afficherln("Vous n'aimez aucun jeu pour le moment...\n");
+				choice = 0;
 				break;
 				 
-			case 1:
-				...
+			case 1: // only one favorite game
+				// Querry (get the list of favorite games)
+				selectQuerry = BD.executerSelect(connection, "SELECT jeTitre FROM jeu WHERE jeJoueur = '" + currentUser + "'");
+				putStringQuerryInTab(favoriteGames, selectQuerry, "jeTitre");
+				BD.fermerResultat(selectQuerry);
+
+				// Choose to search other users
+				char answer;
+				Ecran.afficher("Votre jeu favoris est " + favoriteGames[0] + ". Voulez-vous trouver des utilisateurs qui aiment ce jeu ? [Y/N] ");
+				answer = Clavier.saisirChar();
+				if(answer != 'Y') {
+					choice = 0,;
+				}
 				break;
 			
-			default:
+			default: // many favorite games
+				// Querry (get the list of favorite games)
+				selectQuerry = BD.executerSelect(connection, "SELECT jeTitre FROM jeu WHERE jeJoueur = '" + currentUser + "'");
 				putStringQuerryInTab(favoriteGames, selectQuerry, "jeTitre");
+				BD.fermerResultat(selectQuerry);
+
+				// Choice of the game
 				Ecran.afficherln("Voici la liste des jeux que vous aimez: ");
 				for(int i=0; i<nbFavoriteGames; i++) {
 					Ecran.afficherln(" " + (i+1) + " - " + favoriteGames[i]);
@@ -197,7 +211,13 @@ public class Library {
 				} while(choice < 1 || choice > nbFavoriteGames);
 				break;
 		}
-		
+
+		// Search of users
+		if(choice > 0) {
+			selectQuerry = BD.executerSelect(connection, "...");
+		} else {
+			Ecran.afficherln("Vous n'avez effectué aucune recherche.");
+		}	
 	}
 
 }
