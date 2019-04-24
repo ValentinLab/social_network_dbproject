@@ -26,8 +26,10 @@ public class SocialNetwork {
 		Library.followUser(connection, currentUser);
 		*/
 
+		/*
 		// Get an appointment with a user
 		Library.getAppointment(connection, currentUser);
+		*/
 	}
 
 }

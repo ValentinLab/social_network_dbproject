@@ -77,11 +77,11 @@ public class Library {
 		// Variables
 		String[] otherUsers;
 		int nbFollowedUsers;
-		int nbUserToMeet = -1;
+		int indexUserToMeet = -1;
 		int selectQuerry;
 		int updateQuery;
 
-		// Querry (get the number of users followed by the current user)
+		// Querry (get the number of users followed by the current user with no appointment)
 		selectQuerry = BD.executerSelect(connection, "SELECT COUNT(*) AS NbUsers FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV = 0");
 
 		// Checking of the querry result
@@ -89,57 +89,59 @@ public class Library {
 		nbFollowedUsers = BD.attributInt(selectQuerry, "NbUsers");
 		BD.fermerResultat(selectQuerry);
 
-		// Select the user and get an appoitment
+		// Select a user and offer an appoitment
 		otherUsers = new String[nbFollowedUsers];
 		switch(nbFollowedUsers) {
-			case 0:
+			case 0: // can't offer any appointment
 				Ecran.afficherln("Vous ne suivez aucun utilisateur ou vous avez déjà proposé des rendez-vous à chacun d'entre eux, il est donc impossible de proposer un rendez-vous.\n");
 				break;
-			case 1:
+			case 1: // can offer only one appointment
+				// Querry (get the user)
 				selectQuerry = BD.executerSelect(connection, "SELECT suSuivi FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV = 0");
 				putStringQuerryInTab(otherUsers, selectQuerry, "suSuivi");
 
-				// choice of the user
+				// Choice of the user
 				char answer;
 				Ecran.afficherln("Vous ne pouvez proposer un rendez-vous qu'à l'utilisateur " + otherUsers[0] + ".");
 				Ecran.afficher("Souhaitez-vous le faire ? [Y/N] ");
 				answer = Clavier.saisirChar();
 				if(answer == 'Y') {
-					nbUserToMeet = 0;
+					indexUserToMeet = 0;
 				}
 				Ecran.sautDeLigne();
 				BD.fermerResultat(selectQuerry);
 				break;
-			default:
-				selectQuerry = BD.executerSelect(connection, "SELECT suSuivi FROM suivi WHERE suSuiveur = '" + currentUser + "'");
+			default: // can offer many appointments
+				// Querry (get the list of users)
+				selectQuerry = BD.executerSelect(connection, "SELECT suSuivi FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV = 0");
 				putStringQuerryInTab(otherUsers, selectQuerry, "suSuivi");
 
-				// choice of the user
+				// Choice of the user
 				Ecran.afficherln("Voici la liste des utilisateurs auxquels vous pouvez proposer un rendez-vous:");
 				Ecran.afficherln(" 0 - Personne");
 				for(int i=0; i<nbFollowedUsers; i++) {
 					Ecran.afficherln(" " + (i+1) + " - " + otherUsers[i]);
 				}
 				do {
-					if(nbUserToMeet > nbFollowedUsers) {
+					if(indexUserToMeet > nbFollowedUsers) {
 						Ecran.afficherln("/!\\ ATTENTION ! Ce numéro n'est pas valide.");
 					}
 					Ecran.afficher("Numéro de l'utilisateur que vous souhaitez rencontrer: ");
-					nbUserToMeet = Clavier.saisirInt();
+					indexUserToMeet = Clavier.saisirInt();
 					Ecran.sautDeLigne();
-				} while(nbUserToMeet > nbFollowedUsers);		
-				nbUserToMeet = nbUserToMeet - 1;
+				} while(indexUserToMeet > nbFollowedUsers);		
+				indexUserToMeet = indexUserToMeet - 1;
 				BD.fermerResultat(selectQuerry);
 				break;
 		}
 
 		// Get an appointment
-		if(nbUserToMeet < 0) {
+		if(indexUserToMeet < 0) {
 			Ecran.afficherln("Vous n'avez proposé aucun rendez-vous.");
 		} else {
-			updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 1 WHERE suSuiveur = '" + currentUser + "' AND suSuivi = '" + otherUsers[nbUserToMeet] + "'");
+			updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 1 WHERE suSuiveur = '" + currentUser + "' AND suSuivi = '" + otherUsers[indexUserToMeet] + "'");
 			BD.fermerResultat(updateQuery);
-			Ecran.afficherln("Vous avez proposé un rendez-vous à " + otherUsers[nbUserToMeet]);
+			Ecran.afficherln("Vous avez proposé un rendez-vous à " + otherUsers[indexUserToMeet]);
 		}
 	}
 
