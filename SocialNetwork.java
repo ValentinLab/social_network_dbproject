@@ -21,8 +21,10 @@ public class SocialNetwork {
 		// Database connection
 		connection = BD.ouvrirConnexion("localhost", "reseau", "root", "");
 
+		/*
 		// Fin users with same favorite games
 		Library.searchUsers(connection, currentUser);
+		*/
 		
 		/*
 		// Following of a user
