@@ -186,7 +186,7 @@ public class Library {
 				Ecran.afficher("Votre jeu favoris est " + favoriteGames[0] + ". Voulez-vous trouver des utilisateurs qui aiment ce jeu ? [Y/N] ");
 				answer = Clavier.saisirChar();
 				if(answer != 'Y') {
-					choice = 0,;
+					choice = 0;
 				}
 				break;
 			
@@ -214,7 +214,19 @@ public class Library {
 
 		// Search of users
 		if(choice > 0) {
-			selectQuerry = BD.executerSelect(connection, "...");
+			// Querry (get the other users)
+			selectQuerry = BD.executerSelect(connection, "SELECT jeJoueur FROM jeu WHERE jeTitre = '" + favoriteGames[choice-1] + "' AND jeJoueur != '" + currentUser + "'");
+
+			// Display of users
+			if(BD.suivant(selectQuerry)) {
+				Ecran.afficherln("Liste des joueurs appréciant " + favoriteGames[choice-1] + " :");
+				do {
+					Ecran.afficherln(" - " + BD.attributString(selectQuerry, "jeJoueur"));
+				} while(BD.suivant(selectQuerry));
+				BD.fermerResultat(selectQuerry);
+			} else {
+				Ecran.afficherln("Il n'y a aucun autre joueur...");
+			}
 		} else {
 			Ecran.afficherln("Vous n'avez effectué aucune recherche.");
 		}	
