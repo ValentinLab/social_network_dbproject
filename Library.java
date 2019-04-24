@@ -68,7 +68,7 @@ public class Library {
 	}
 
 	/**
-	 * Get an appoitment with a folloed user
+	 * Get an appoitment with a followed user
 	 * 
 	 * @param connection Connection to the DB
 	 * @param currentUser User currently connected
@@ -95,6 +95,7 @@ public class Library {
 			case 0: // can't offer any appointment
 				Ecran.afficherln("Vous ne suivez aucun utilisateur ou vous avez déjà proposé des rendez-vous à chacun d'entre eux, il est donc impossible de proposer un rendez-vous.\n");
 				break;
+
 			case 1: // can offer only one appointment
 				// Querry (get the user)
 				selectQuerry = BD.executerSelect(connection, "SELECT suSuivi FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV = 0");
@@ -111,6 +112,7 @@ public class Library {
 				Ecran.sautDeLigne();
 				BD.fermerResultat(selectQuerry);
 				break;
+
 			default: // can offer many appointments
 				// Querry (get the list of users)
 				selectQuerry = BD.executerSelect(connection, "SELECT suSuivi FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV = 0");
@@ -143,6 +145,59 @@ public class Library {
 			BD.fermerResultat(updateQuery);
 			Ecran.afficherln("Vous avez proposé un rendez-vous à " + otherUsers[indexUserToMeet]);
 		}
+	}
+
+	/**
+	 * Find users with same favorite games
+	 * @param connection Connection to the DB
+	 * @param currentUser User currently connected
+	 */
+	public static void searchUsers(int connection, String currentUser) {
+		// Variables
+		String[] favoriteGames;
+		int nbFavoriteGames;
+		int selectQuerry;
+		int choice = 1;
+
+		// Querry (get the number of users followed by the current user with no appointment)
+		selectQuerry = BD.executerSelect(connection, "SELECT COUNT(*) AS nbGames FROM jeu WHERE jeJoueur = '" + currentUser + "'");
+
+		// Checking of the querry result
+		BD.suivant(selectQuerry);
+		nbFavoriteGames = BD.attributInt(selectQuerry, "nbGames");
+		BD.fermerResultat(selectQuerry);
+
+		// Querry (get the list of favorite games)
+		selectQuerry = BD.executerSelect(connection, "SELECT jeTitre FROM jeu WHERE jeJoueur = '" + currentUser + "'");
+		
+		// Display of favorite games
+		favoriteGames = new String[nbFavoriteGames];
+		switch(nbFavoriteGames) {
+			case 0:
+				Ecran.afficherln("Vous n'aimez aucun jeu pour le moment...");
+				break;
+				 
+			case 1:
+				...
+				break;
+			
+			default:
+				putStringQuerryInTab(favoriteGames, selectQuerry, "jeTitre");
+				Ecran.afficherln("Voici la liste des jeux que vous aimez: ");
+				for(int i=0; i<nbFavoriteGames; i++) {
+					Ecran.afficherln(" " + (i+1) + " - " + favoriteGames[i]);
+				}
+				do {
+					if(choice < 1 || choice > nbFavoriteGames) {
+						Ecran.afficherln("/!\\ ATTENTION ! Ce numéro n'est pas valide.");
+					}
+					Ecran.afficher("Numéro du jeu pour lequel vous souhaitez trouver des joueurs aimant le même jeu: ");
+					choice = Clavier.saisirInt();
+					Ecran.sautDeLigne();
+				} while(choice < 1 || choice > nbFavoriteGames);
+				break;
+		}
+		
 	}
 
 }
