@@ -140,7 +140,7 @@ public class Library {
 				Ecran.afficherln("Vous suivez déjà l'utilisateur " + otherUser + ".");
 			} else { // not followed
 				// Querry (update of the table suivi)
-				updateQuery = BD.executerUpdate(connection, "INSERT INTO suivi (suSuiveur, suSuivi, suRDV) VALUES ('" + currentUser + "', '" + otherUser + "', 0)");
+				updateQuery = BD.executerUpdate(connection, "INSERT INTO suivi (suSuiveur, suSuivi) VALUES ('" + currentUser + "', '" + otherUser + "')");
 				Ecran.afficherln("Et voilà ! Vous suivez maintenant l'utilisateur " + otherUser + ".");
 			}
 		} else { // the user does not exists
@@ -165,7 +165,7 @@ public class Library {
 		int updateQuery;
 
 		// Querry (get the number of users followed by the current user with no appointment)
-		selectQuerry = BD.executerSelect(connection, "SELECT COUNT(*) AS NbUsers FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV = 0");
+		selectQuerry = BD.executerSelect(connection, "SELECT COUNT(*) AS NbUsers FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV IS NULL");
 
 		// Checking of the querry result
 		BD.suivant(selectQuerry);
@@ -181,7 +181,7 @@ public class Library {
 
 			case 1: // can offer only one appointment
 				// Querry (get the user)
-				selectQuerry = BD.executerSelect(connection, "SELECT suSuivi FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV = 0");
+				selectQuerry = BD.executerSelect(connection, "SELECT suSuivi FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV IS NULL");
 				putStringQuerryInTab(otherUsers, selectQuerry, "suSuivi");
 
 				// Choice of the user
@@ -198,7 +198,7 @@ public class Library {
 
 			default: // can offer many appointments
 				// Querry (get the list of users)
-				selectQuerry = BD.executerSelect(connection, "SELECT suSuivi FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV = 0");
+				selectQuerry = BD.executerSelect(connection, "SELECT suSuivi FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV IS NULL");
 				putStringQuerryInTab(otherUsers, selectQuerry, "suSuivi");
 
 				// Choice of the user
@@ -224,7 +224,7 @@ public class Library {
 		if(indexUserToMeet < 0) {
 			Ecran.afficherln("Vous n'avez proposé aucun rendez-vous.");
 		} else {
-			updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 1 WHERE suSuiveur = '" + currentUser + "' AND suSuivi = '" + otherUsers[indexUserToMeet] + "'");
+			updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 0 WHERE suSuiveur = '" + currentUser + "' AND suSuivi = '" + otherUsers[indexUserToMeet] + "'");
 			BD.fermerResultat(updateQuery);
 			Ecran.afficherln("Vous avez proposé un rendez-vous à " + otherUsers[indexUserToMeet]);
 		}
