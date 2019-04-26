@@ -35,6 +35,9 @@ public class SocialNetwork {
 		// Get an appointment with a user
 		Library.getAppointment(connection, currentUser);
 		*/
+
+		// Answer appointment
+		Library.answerAppointment(connection, currentUser);
 	}
 
 }

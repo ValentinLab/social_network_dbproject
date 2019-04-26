@@ -230,4 +230,89 @@ public class Library {
 		}
 	}
 
+	/**
+	 * Be able to answer appointments
+	 * 
+	 * @param connection Connection to the DB
+	 * @param currentUser User currently connected
+	 */
+	public static void answerAppointment(int connection, String currentUser) {
+		// Variables
+		String[] appointmentUsers;
+		int nbAppointmentUsers;
+		int indexUser = 0;
+		int selectQuerry;
+		int updateQuery;
+
+		// Querry (get the number of users with appointment)
+		selectQuerry = BD.executerSelect(connection, "SELECT COUNT(*) AS NbAppointment FROM suivi WHERE suSuivi = '" + currentUser + "' AND suRDV = 0");
+
+		// Checking of the result of the query
+		BD.suivant(selectQuerry);
+		nbAppointmentUsers = BD.attributInt(selectQuerry, "NbAppointment");
+		BD.fermerResultat(selectQuerry);
+		appointmentUsers = new String[nbAppointmentUsers];
+
+		// Answer to other users
+		switch(nbAppointmentUsers) {
+			case 0: // no appointment
+				Ecran.afficherln("Aucun utilisateur ne vous a proposé de rendez-vous pour le moment.");
+				break;
+
+			case 1: // one appointment
+				// Querry (get other users)
+				selectQuerry = BD.executerSelect(connection, "SELECT suSuiveur FROM suivi WHERE suSuivi = '" + currentUser + "' AND suRDV = 0");
+				putStringQuerryInTab(appointmentUsers, selectQuerry, "suSuiveur");
+				BD.fermerResultat(selectQuerry);
+
+				// Select a user to answer
+				char answer;
+				Ecran.afficher("Vous avez une proposition de rendez-vous de la part de " + appointmentUsers[0] + ".\nSouhaitez-vous lui répondre ? [Y/N] ");
+				answer = Clavier.saisirChar();
+				Ecran.sautDeLigne();
+				if(answer == 'Y')
+					indexUser = 1;
+				break;
+
+			default: // many appointments
+				// Querry (get other users)
+				selectQuerry = BD.executerSelect(connection, "SELECT suSuiveur FROM suivi WHERE suSuivi = '" + currentUser + "' AND suRDV = 0");
+				putStringQuerryInTab(appointmentUsers, selectQuerry, "suSuiveur");
+				BD.fermerResultat(selectQuerry);
+
+				// Select a user to answer
+				Ecran.afficherln("Voici la liste des utilisateurs qui vous on proposé un rendez-vous:");
+				for(int i=0; i<nbAppointmentUsers; i++) {
+					Ecran.afficherln(" " + (i+1) + " - " + appointmentUsers[i]);
+				}
+				do {
+					if(indexUser > nbAppointmentUsers) {
+						Ecran.afficherln("/!\\ ATTENTION Le numéro n'est pas valide.");
+					}
+					Ecran.afficher("Numéro de l'utilisateur auquel vous souhaitez répondre: ");
+					indexUser = Clavier.saisirInt();
+					Ecran.sautDeLigne();
+				} while(indexUser > nbAppointmentUsers);
+				break;
+		}
+
+		// Answer appointment
+		if(indexUser > 0) {
+			// Accept or not the answer
+			char answer;
+			Ecran.afficher("Souhaitez-vous accepter le rendez-vous de " + appointmentUsers[indexUser-1] + " ? [Y/N] ");
+			answer = Clavier.saisirChar();
+
+			// Send the answer
+			if(answer == 'Y') {
+				updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 1 WHERE suSuiveur =  '" + appointmentUsers[indexUser-1] + "' AND suSuivi = '" + currentUser + "'");
+				Ecran.afficherln("Vous avez accepté le rendez-vous avec " + appointmentUsers[indexUser-1] + ".");
+			} else {
+				updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = -1 WHERE suSuiveur =  '" + appointmentUsers[indexUser-1] + "' AND suSuivi = '" + currentUser + "'");
+				Ecran.afficherln("Vous avez refusé le rendez-vous avec " + appointmentUsers[indexUser-1] + ".");
+			}
+			BD.fermerResultat(updateQuery);
+		}
+	}
+
 }
