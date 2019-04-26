@@ -13,11 +13,11 @@ public class SocialNetwork {
 	public static void inscription (int connexion, String nomReseauSocial) {
 		String motDePasse, login, sql, jvPref;
 		JOptionPane menuInscription = new JOptionPane();
-		login = saisieCorrecte("login", 30, menuInscription);
+		login = saisieCorrecte("Inscription", "login", 30, menuInscription);
 		if(login == null){
 			return;
 		}
-		motDePasse = saisieCorrecte("mot de passe", 10, menuInscription);
+		motDePasse = saisieCorrecte("Inscription","mot de passe", 10, menuInscription);
 		if(motDePasse == null){
 			return;
 		}
@@ -56,7 +56,7 @@ public class SocialNetwork {
 		}*/
 		
 		menuInscription.showMessageDialog(null, "Félicitations pour votre inscription sur " + nomReseauSocial + ". Nous allons maintenant vous demander des informations pour compléter votre profil ! " , "Renseignement complémentaire", JOptionPane.INFORMATION_MESSAGE);
-		jvPref = saisieCorrecte("jeu vidéo préféré", 50, menuInscription);
+		jvPref = saisieCorrecte("Info complémentaire", "jeu vidéo préféré", 50, menuInscription);
 		if(jvPref == null){
 			return;
 		}
@@ -74,11 +74,53 @@ public class SocialNetwork {
 		//inscription = BD.executerUpdate(connexion, sql);
 		menuInscription.showMessageDialog(null, "Et voilà, votre profil est finalisé ! Nous vous souhaitons une agréable utilisation de " + nomReseauSocial + " ! ", "Inscription finalisée", JOptionPane.INFORMATION_MESSAGE);
 	}
-
-	public static String saisieCorrecte(String typeSaisie,  int nbChar, JOptionPane menu){
+	
+	public static void connexion(int connexion) {
+		String login, motDePasse;
+		JOptionPane menuConnexion = new JOptionPane();
+		login = saisieCorrecte("Connexion", "login", 30, menuConnexion);
+		if(login == null){
+			return;
+		}
+		motDePasse = saisieCorrecte("Connexion", "mot de passe", 10, menuConnexion);
+		if(motDePasse == null){
+			return;
+		}
+		//  tests des données avec celles présentes dans la base de donnée
+		/*int res = BD.executerSelect(connexion, "SELECT* FROM utilisateur");
+		while (BD.suivant(res)) {
+			if( BD.attributString(res,"utLogin").equals(login)){
+				if(BD.attributString(res,"utPassword").equals(motDePasse)){
+					menuConnexion.showMessageDialog(null, "Bonjour " + login + " ! ");
+					BD.suivant(res) = false;
+				}
+			}
+		}
+		BD.fermerResultat(res);
+		*/
+		String[] choixConnexion = {"Rechercher des joueurs", "Gérer mon compte",  "Retour"};
+		int action = menuConnexion.showOptionDialog(null, "Que voulez-vous faire ?", "Menu Connexion", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, choixConnexion, choixConnexion[2]);
+		switch(action){
+			case 0 : {
+	
+			}
+			break; 
+			
+			case 1 : {
+				
+			}
+			break; 
+			
+			case 2 : {
+				return;
+			}
+		}
+	}
+	
+	public static String saisieCorrecte( String typeMenu, String typeSaisie,  int nbChar, JOptionPane menu){
 		String valeur;
 		do{
-			valeur = menu.showInputDialog(null, "Veuillez saisir votre " + typeSaisie + " : ", "Inscription - " + typeSaisie, JOptionPane.QUESTION_MESSAGE);
+			valeur = menu.showInputDialog(null, "Veuillez saisir votre " + typeSaisie + " : ", typeMenu + " - " + typeSaisie, JOptionPane.QUESTION_MESSAGE);
 			if(valeur == null){
 				return(null);
 			}
@@ -112,7 +154,7 @@ public class SocialNetwork {
 		/***********Variables programme***********/
 		final String nomReseauSocial = "TINGAMER";
 		int action;
-		JOptionPane menuPrincipal = new JOptionPane(), menuConnexion = new JOptionPane();
+		JOptionPane menuPrincipal = new JOptionPane();
 		boolean arret = false;
 		
 		//Connexion à la base de donnée
@@ -131,7 +173,7 @@ public class SocialNetwork {
 				
 				//Connexion au réseau social
 				case 1 : {
-					
+					connexion(connexion);
 				}
 				break;
 				
@@ -142,7 +184,7 @@ public class SocialNetwork {
 				break;
 			}
 		} while(!arret);
-		//BD.fermerConnextion(connextion);
+		//BD.fermerConnexion(connexion);
 	}
 
 }
