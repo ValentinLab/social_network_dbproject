@@ -1,16 +1,11 @@
+import javax.swing.JOptionPane;
+
 /**
  * Social Network (DataBase Project - Topic N°3)
  * Library.java - all functions
  * 
  * @author Fabian Devel, Valentin Perignon
  */
-
-import java.security.spec.ECParameterSpec;
-
-import javax.swing.JOptionPane;
-
-import jdk.nashorn.internal.runtime.JSONFunctions;
-import jdk.nashorn.internal.scripts.JO;
 
 public class Library {
 
@@ -117,6 +112,8 @@ public class Library {
 				}
 				showMessage += "\nNuméro du jeu pour lequel vous souhaitez trouver des joueurs aimant le même jeu:";
 				answerMessString = boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE);
+				if(answerMessString == null || answerMessString.equals(""))
+					return;
 				choice = Integer.parseInt(answerMessString);
 				break;
 		}
@@ -167,6 +164,8 @@ public class Library {
 			}
 			showMessage += "Veuillez saisir le login de l'utilisateur à suivre: ";
 			otherUser = boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE);
+			if(otherUser == null || otherUser.equals(""))
+				return;
 		} while(otherUser.equals(currentUser));
 
 		// Querry (check if the user exits)

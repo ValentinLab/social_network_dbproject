@@ -1,11 +1,11 @@
+import javax.swing.JOptionPane;
+
 /**
  * Social Network (DataBase Project - Topic N°3)
  * SocialNetwork.java - main code
  * 
  * @author Fabian Devel, Valentin Perignon
  */
-
-import javax.swing.JOptionPane;
 
 public class SocialNetwork {
 
@@ -33,7 +33,7 @@ public class SocialNetwork {
 				String[] choicesMessage = {"S'inscrire", "Se connecter",  "Quitter"};
 
 				// Display
-				int action = mainMenu.showOptionDialog(null, "Choississez votre action :", NETWORKNAME, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, choicesMessage, choicesMessage[2]);
+				int action = mainMenu.showOptionDialog(null, "Choississez votre action :", NETWORKNAME, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, choicesMessage, choicesMessage[2]);
 
 				// Choices
 				switch(action){
