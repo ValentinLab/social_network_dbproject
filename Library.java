@@ -236,9 +236,8 @@ public class Library {
 				showMessage = "Vous ne pouvez proposer un rendez-vous qu'à l'utilisateur " + otherUsers[0] + ".\n";
 				showMessage += "Souhaitez-vous le faire ?";
 				answer = boxMessage.showConfirmDialog(null, showMessage, boxTitle, JOptionPane.YES_NO_OPTION);
-				if(answer == JOptionPane.OK_OPTION) {
+				if(answer == JOptionPane.OK_OPTION)
 					indexUserToMeet = 0;
-				}
 				BD.fermerResultat(selectQuerry);
 				break;
 
@@ -290,6 +289,11 @@ public class Library {
 		int selectQuerry;
 		int updateQuery;
 
+		// Display variables
+		JOptionPane boxMessage = new JOptionPane();
+		String boxTitle = "Répondre à une proposition de rendez-vous";
+		String showMessage;
+
 		// Querry (get the number of users with appointment)
 		selectQuerry = BD.executerSelect(connection, "SELECT COUNT(*) AS NbAppointment FROM suivi WHERE suSuivi = '" + currentUser + "' AND suRDV = 0");
 
@@ -302,7 +306,8 @@ public class Library {
 		// Answer to other users
 		switch(nbAppointmentUsers) {
 			case 0: // no appointment
-				Ecran.afficherln("Aucun utilisateur ne vous a proposé de rendez-vous pour le moment.");
+				showMessage = "Aucun utilisateur ne vous a proposé de rendez-vous pour le moment.";
+				boxMessage.showMessageDialog(null, showMessage, boxTitle, JOptionPane.INFORMATION_MESSAGE);
 				break;
 
 			case 1: // one appointment
@@ -312,11 +317,10 @@ public class Library {
 				BD.fermerResultat(selectQuerry);
 
 				// Select a user to answer
-				char answer;
-				Ecran.afficher("Vous avez une proposition de rendez-vous de la part de " + appointmentUsers[0] + ".\nSouhaitez-vous lui répondre ? [Y/N] ");
-				answer = Clavier.saisirChar();
-				Ecran.sautDeLigne();
-				if(answer == 'Y')
+				int answer;
+				showMessage = "Vous avez une proposition de rendez-vous de la part de " + appointmentUsers[0] + ".\nSouhaitez-vous lui répondre ?";
+				answer = boxMessage.showConfirmDialog(null, showMessage, boxTitle, JOptionPane.YES_NO_OPTION);
+				if(answer == JOptionPane.OK_OPTION)
 					indexUser = 1;
 				break;
 
@@ -327,17 +331,16 @@ public class Library {
 				BD.fermerResultat(selectQuerry);
 
 				// Select a user to answer
-				Ecran.afficherln("Voici la liste des utilisateurs qui vous on proposé un rendez-vous:");
+				showMessage = "Voici la liste des utilisateurs qui vous ont proposé un rendez-vous:\n";
 				for(int i=0; i<nbAppointmentUsers; i++) {
-					Ecran.afficherln(" " + (i+1) + " - " + appointmentUsers[i]);
+					showMessage += " " + (i+1) + " - " + appointmentUsers[i] + "\n";
 				}
 				do {
 					if(indexUser > nbAppointmentUsers) {
-						Ecran.afficherln("/!\\ ATTENTION Le numéro n'est pas valide.");
+						showMessage += "/!\\ ATTENTION Le numéro n'est pas valide.";
 					}
-					Ecran.afficher("Numéro de l'utilisateur auquel vous souhaitez répondre: ");
-					indexUser = Clavier.saisirInt();
-					Ecran.sautDeLigne();
+					showMessage += "Numéro de l'utilisateur auquel vous souhaitez répondre: ";
+					indexUser = Integer.parseInt(boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE));
 				} while(indexUser > nbAppointmentUsers);
 				break;
 		}
@@ -345,18 +348,19 @@ public class Library {
 		// Answer appointment
 		if(indexUser > 0) {
 			// Accept or not the answer
-			char answer;
-			Ecran.afficher("Souhaitez-vous accepter le rendez-vous de " + appointmentUsers[indexUser-1] + " ? [Y/N] ");
-			answer = Clavier.saisirChar();
+			int answer;
+			showMessage = "Souhaitez-vous accepter le rendez-vous de " + appointmentUsers[indexUser-1] + " ?";
+			answer = boxMessage.showConfirmDialog(null, showMessage, boxTitle, JOptionPane.YES_NO_OPTION);
 
 			// Send the answer
-			if(answer == 'Y') {
+			if(answer == JOptionPane.OK_OPTION) {
 				updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 1 WHERE suSuiveur =  '" + appointmentUsers[indexUser-1] + "' AND suSuivi = '" + currentUser + "'");
-				Ecran.afficherln("Vous avez accepté le rendez-vous avec " + appointmentUsers[indexUser-1] + ".");
+				showMessage = "Vous avez accepté le rendez-vous avec " + appointmentUsers[indexUser-1] + ".";
 			} else {
 				updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = -1 WHERE suSuiveur =  '" + appointmentUsers[indexUser-1] + "' AND suSuivi = '" + currentUser + "'");
-				Ecran.afficherln("Vous avez refusé le rendez-vous avec " + appointmentUsers[indexUser-1] + ".");
+				showMessage = "Vous avez refusé le rendez-vous avec " + appointmentUsers[indexUser-1] + ".";
 			}
+			boxMessage.showMessageDialog(null, showMessage, boxTitle, JOptionPane.INFORMATION_MESSAGE);
 			BD.fermerResultat(updateQuery);
 		}
 	}
