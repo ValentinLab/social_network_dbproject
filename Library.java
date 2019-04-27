@@ -5,7 +5,13 @@
  * @author Fabian Devel, Valentin Perignon
  */
 
+import javax.swing.JOptionPane;
+
 public class Library {
+
+	// ------------------------------
+	// Private methods
+	// ------------------------------
 
 	/**
 	 * Put all string resultats from a query in a tab
@@ -21,6 +27,10 @@ public class Library {
 			tab[i] = BD.attributString(querry, attribut);
 		}
 	}
+
+	// ------------------------------
+	// Public methods
+	// ------------------------------
 
 	/**
 	 * Find users with same favorite games
