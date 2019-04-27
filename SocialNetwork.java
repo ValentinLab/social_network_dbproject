@@ -51,7 +51,7 @@ public class SocialNetwork {
 				}
 			} else {
 				// Display variables
-				String[] choicesMessage = {"Rechercher un utilisateur", "Suivre un utilisateur", "Proposer un rendez-vous", "Répondre à un rendez-vous", "Quitter"};
+				String[] choicesMessage = {"Répondre à un rendez-vous", "Proposer un rendez-vous", "Suivre un utilisateur", "Rechercher un utilisateur", "Quitter"};
 				String textMessage = "Bienvenue " + currentUser + ".\nQue souhaitez-vous faire ?";
 
 				// Display
@@ -59,19 +59,19 @@ public class SocialNetwork {
 
 				// Choices
 				switch(action){
-					case 0: // search
+					case 3: // search
 						Library.searchUsers(connection, currentUser);
 						break;
 					
-					case 1: // follow
+					case 2: // follow
 						Library.followUser(connection, currentUser);
 						break;
 
-					case 2: // get appointment
+					case 1: // get appointment
 						Library.getAppointment(connection, currentUser);
 						break;
 
-					case 3: // answer appointment
+					case 0: // answer appointment
 						Library.answerAppointment(connection, currentUser);
 						break;
 					

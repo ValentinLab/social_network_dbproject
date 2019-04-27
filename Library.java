@@ -80,7 +80,6 @@ public class Library {
 		
 		// Display of favorite games
 		favoriteGames = new String[nbFavoriteGames];
-									nbFavoriteGames = 3; // DEBUG !!!!
 		switch(nbFavoriteGames) {
 			case 0: // no favorite game
 				boxMessage.showMessageDialog(null, "Vous n'aimez aucun jeu pour le moment.", boxTitle, JOptionPane.INFORMATION_MESSAGE);
@@ -120,23 +119,22 @@ public class Library {
 		}
 
 		// Search of users
-		showMessage = "";
 		if(choice > 0) {
 			// Querry (get the other users)
 			selectQuerry = BD.executerSelect(connection, "SELECT jeJoueur FROM jeu WHERE jeTitre = '" + favoriteGames[choice-1] + "' AND jeJoueur != '" + currentUser + "'");
 
 			// Display of users
 			if(BD.suivant(selectQuerry)) {
-				showMessage += "Liste des joueurs appréciant " + favoriteGames[choice-1] + " :\n";
+				showMessage = "Liste des joueurs appréciant " + favoriteGames[choice-1] + " :\n";
 				do {
 					showMessage += " - " + BD.attributString(selectQuerry, "jeJoueur") + "\n";
 				} while(BD.suivant(selectQuerry));
 				BD.fermerResultat(selectQuerry);
 			} else {
-				showMessage += "Il n'y a aucun autre joueur...";
+				showMessage = "Il n'y a aucun autre joueur...";
 			}
 		} else {
-			showMessage += "Vous n'avez effectué aucune recherche.";
+			showMessage = "Vous n'avez effectué aucune recherche.";
 		}
 		boxMessage.showMessageDialog(null, showMessage, boxTitle, JOptionPane.INFORMATION_MESSAGE);
 	}
@@ -153,14 +151,20 @@ public class Library {
 		int selectQuerry;
 		int updateQuery;
 
+		// Display variables
+		JOptionPane boxMessage = new JOptionPane();
+		String boxTitle = "Suivi d'utilisateurs";
+		String showMessage;
+		String answerMessString;
+
 		// Login of user to follow entry
 		do {
+			showMessage = "";
 			if(otherUser.equals(currentUser)) {
-				Ecran.afficherln("/!\\ ATTENTION ! Vous devez entrer un login différent du votre...");
+				showMessage += "/!\\ ATTENTION ! Vous devez entrer un login différent du votre...\n";
 			}
-			Ecran.afficher("Veuillez saisir le login de l'utilisateur à suivre: ");
-			otherUser = Clavier.saisirString();
-			Ecran.sautDeLigne();
+			showMessage += "Veuillez saisir le login de l'utilisateur à suivre: ";
+			otherUser = boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE);
 		} while(otherUser.equals(currentUser));
 
 		// Querry (check if the user exits)
@@ -171,17 +175,18 @@ public class Library {
 			// Querry (check if the current user already follow the other)
 			selectQuerry = BD.executerSelect(connection, "SELECT * FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suSuivi = '" + otherUser + "'");
 			if(BD.suivant(selectQuerry)) { // already follow
-				Ecran.afficherln("Vous suivez déjà l'utilisateur " + otherUser + ".");
+				showMessage = "Vous suivez déjà l'utilisateur " + otherUser + ".";
 			} else { // not followed
 				// Querry (update of the table suivi)
 				updateQuery = BD.executerUpdate(connection, "INSERT INTO suivi (suSuiveur, suSuivi) VALUES ('" + currentUser + "', '" + otherUser + "')");
-				Ecran.afficherln("Et voilà ! Vous suivez maintenant l'utilisateur " + otherUser + ".");
+				showMessage = "Et voilà ! Vous suivez maintenant l'utilisateur " + otherUser + ".";
 			}
 		} else { // the user does not exists
-			Ecran.afficherln("/!\\ ATTENTION ! L'utilisateur " + otherUser + " n'existe pas...");
+			showMessage = "/!\\ ATTENTION ! L'utilisateur " + otherUser + " n'existe pas...";
 			followUser(connection, currentUser);
 		}
 		BD.fermerResultat(selectQuerry);
+		boxMessage.showMessageDialog(null, showMessage, boxTitle, JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**
