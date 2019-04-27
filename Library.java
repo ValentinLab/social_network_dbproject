@@ -155,7 +155,6 @@ public class Library {
 		JOptionPane boxMessage = new JOptionPane();
 		String boxTitle = "Suivi d'utilisateurs";
 		String showMessage;
-		String answerMessString;
 
 		// Login of user to follow entry
 		do {
@@ -202,6 +201,11 @@ public class Library {
 		int indexUserToMeet = -1;
 		int selectQuerry;
 		int updateQuery;
+
+		// Display variables
+		JOptionPane boxMessage = new JOptionPane();
+		String boxTitle = "Proposition de rendez-vous";
+		String showMessage;
 
 		// Querry (get the number of users followed by the current user with no appointment)
 		selectQuerry = BD.executerSelect(connection, "SELECT COUNT(*) AS NbUsers FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suRDV IS NULL");
