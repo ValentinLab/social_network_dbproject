@@ -16,8 +16,8 @@ public class SocialNetwork {
 		int connection;								/** Connection to the database */
 		boolean isConnected = false;				/** State of the connection of the user */
 		String currentUser;							/** Login of the user currently connected */
-		JOptionPane mainMenu = new JOptionPane();	/** Box */
-		boolean arret = false;						/** State of the app */
+		JOptionPane mainMenu = new JOptionPane();	/** Message Dialog */
+		boolean isStopped = false;					/** State of the app */
 
 			// DEBUG
 			currentUser = "Valentin";
@@ -30,8 +30,10 @@ public class SocialNetwork {
 		do{
 			if(!isConnected) { // the user is not connected
 				// Display variables
-				String[] choices = {"S'inscrire", "Se connecter",  "Quitter"};
-				int action = mainMenu.showOptionDialog(null, "Choississez votre action :", NETWORKNAME, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, choices, choices[2]);
+				String[] choicesMessage = {"S'inscrire", "Se connecter",  "Quitter"};
+
+				// Display
+				int action = mainMenu.showOptionDialog(null, "Choississez votre action :", NETWORKNAME, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, choicesMessage, choicesMessage[2]);
 
 				// Choices
 				switch(action){
@@ -44,13 +46,16 @@ public class SocialNetwork {
 						break;
 					
 					case 2: // stop the application
-						//arret = Library.stopApp();
+						isStopped = Library.stopApp();
 					break;
 				}
 			} else {
 				// Display variables
-				String[] choices = {"Rechercher un utilisateur", "Suivre un utilisateur", "Proposer un rendez-vous", "Répondre à un rendez-vous", "Quitter"};
-				int action = mainMenu.showOptionDialog(null, "Choississez votre action :", NETWORKNAME, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, choices, choices[4]);
+				String[] choicesMessage = {"Rechercher un utilisateur", "Suivre un utilisateur", "Proposer un rendez-vous", "Répondre à un rendez-vous", "Quitter"};
+				String textMessage = "Bienvenue " + currentUser + ".\nQue souhaitez-vous faire ?";
+
+				// Display
+				int action = mainMenu.showOptionDialog(null, textMessage, NETWORKNAME, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, choicesMessage, choicesMessage[4]);
 
 				// Choices
 				switch(action){
@@ -71,11 +76,11 @@ public class SocialNetwork {
 						break;
 					
 					case 4: // stop the application
-						//arret = Library.stopApp();
+						isStopped = Library.stopApp();
 						break;
 				}
 			}
-		} while(!arret);
+		} while(!isStopped);
 
 		// Closing of the connection
 		BD.fermerConnexion(connection);

@@ -7,6 +7,8 @@
 
 import javax.swing.JOptionPane;
 
+import jdk.nashorn.internal.scripts.JO;
+
 public class Library {
 
 	// ------------------------------
@@ -33,6 +35,24 @@ public class Library {
 	// ------------------------------
 
 	/**
+	 * Stop the app
+	 * 
+	 * @return True if the app has to stop
+	 */
+	public static boolean stopApp() {
+		// Variables
+		boolean isStopped = false;
+		int boxMessage = JOptionPane.showConfirmDialog(null, "Voulez-vous vraiment quitter l'application ?", "A bientôt ! ", JOptionPane.YES_NO_OPTION);
+
+		// Treatment
+		if(boxMessage == 0){
+			isStopped = true;
+		}
+
+		return(isStopped);
+}
+
+	/**
 	 * Find users with same favorite games
 	 * @param connection Connection to the DB
 	 * @param currentUser User currently connected
@@ -44,6 +64,12 @@ public class Library {
 		int selectQuerry;
 		int choice = 1;
 
+		// Display variables
+		JOptionPane boxMessage = new JOptionPane();
+		String boxTitle = "Recherche d'utilisateurs";
+		String showMessage;
+		String answerMessString;
+
 		// Querry (get the number of users followed by the current user with no appointment)
 		selectQuerry = BD.executerSelect(connection, "SELECT COUNT(*) AS nbGames FROM jeu WHERE jeJoueur = '" + currentUser + "'");
 
@@ -54,9 +80,10 @@ public class Library {
 		
 		// Display of favorite games
 		favoriteGames = new String[nbFavoriteGames];
+									nbFavoriteGames = 3; // DEBUG !!!!
 		switch(nbFavoriteGames) {
 			case 0: // no favorite game
-				Ecran.afficherln("Vous n'aimez aucun jeu pour le moment...\n");
+				boxMessage.showMessageDialog(null, "Vous n'aimez aucun jeu pour le moment.", boxTitle, JOptionPane.INFORMATION_MESSAGE);
 				choice = 0;
 				break;
 				 
@@ -67,10 +94,8 @@ public class Library {
 				BD.fermerResultat(selectQuerry);
 
 				// Choose to search other users
-				char answer;
-				Ecran.afficher("Votre jeu favoris est " + favoriteGames[0] + ". Voulez-vous trouver des utilisateurs qui aiment ce jeu ? [Y/N] ");
-				answer = Clavier.saisirChar();
-				if(answer != 'Y') {
+				int answer = boxMessage.showConfirmDialog(null, "Votre jeu favoris est " + favoriteGames[0] + ". Voulez-vous trouver des utilisateurs qui aiment ce jeu ?", boxTitle, JOptionPane.YES_NO_OPTION);
+				if(answer == 1) {
 					choice = 0;
 				}
 				break;
@@ -82,39 +107,38 @@ public class Library {
 				BD.fermerResultat(selectQuerry);
 
 				// Choice of the game
-				Ecran.afficherln("Voici la liste des jeux que vous aimez: ");
+				showMessage = "";
+				answerMessString = "";
+				showMessage = "Voici la liste des jeux que vous aimez:\n";
 				for(int i=0; i<nbFavoriteGames; i++) {
-					Ecran.afficherln(" " + (i+1) + " - " + favoriteGames[i]);
+					showMessage += " " + (i+1) + " - " + favoriteGames[i] + "\n";
 				}
-				do {
-					if(choice < 1 || choice > nbFavoriteGames) {
-						Ecran.afficherln("/!\\ ATTENTION ! Ce numéro n'est pas valide.");
-					}
-					Ecran.afficher("Numéro du jeu pour lequel vous souhaitez trouver des joueurs aimant le même jeu: ");
-					choice = Clavier.saisirInt();
-					Ecran.sautDeLigne();
-				} while(choice < 1 || choice > nbFavoriteGames);
+				showMessage += "\nNuméro du jeu pour lequel vous souhaitez trouver des joueurs aimant le même jeu:";
+				answerMessString = boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE);
+				choice = Integer.parseInt(answerMessString);
 				break;
 		}
 
 		// Search of users
+		showMessage = "";
 		if(choice > 0) {
 			// Querry (get the other users)
 			selectQuerry = BD.executerSelect(connection, "SELECT jeJoueur FROM jeu WHERE jeTitre = '" + favoriteGames[choice-1] + "' AND jeJoueur != '" + currentUser + "'");
 
 			// Display of users
 			if(BD.suivant(selectQuerry)) {
-				Ecran.afficherln("Liste des joueurs appréciant " + favoriteGames[choice-1] + " :");
+				showMessage += "Liste des joueurs appréciant " + favoriteGames[choice-1] + " :\n";
 				do {
-					Ecran.afficherln(" - " + BD.attributString(selectQuerry, "jeJoueur"));
+					showMessage += " - " + BD.attributString(selectQuerry, "jeJoueur") + "\n";
 				} while(BD.suivant(selectQuerry));
 				BD.fermerResultat(selectQuerry);
 			} else {
-				Ecran.afficherln("Il n'y a aucun autre joueur...");
+				showMessage += "Il n'y a aucun autre joueur...";
 			}
 		} else {
-			Ecran.afficherln("Vous n'avez effectué aucune recherche.");
-		}	
+			showMessage += "Vous n'avez effectué aucune recherche.";
+		}
+		boxMessage.showMessageDialog(null, showMessage, boxTitle, JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**
