@@ -5,8 +5,11 @@
  * @author Fabian Devel, Valentin Perignon
  */
 
+import java.security.spec.ECParameterSpec;
+
 import javax.swing.JOptionPane;
 
+import jdk.nashorn.internal.runtime.JSONFunctions;
 import jdk.nashorn.internal.scripts.JO;
 
 public class Library {
@@ -219,7 +222,8 @@ public class Library {
 		otherUsers = new String[nbFollowedUsers];
 		switch(nbFollowedUsers) {
 			case 0: // can't offer any appointment
-				Ecran.afficherln("Vous ne suivez aucun utilisateur ou vous avez déjà proposé des rendez-vous à chacun d'entre eux, il est donc impossible de proposer un rendez-vous.\n");
+				showMessage = "Vous ne suivez aucun utilisateur ou vous avez déjà proposé des rendez-vous à chacun d'entre eux, il est donc impossible de proposer un rendez-vous.\n";
+				boxMessage.showMessageDialog(null, showMessage, boxTitle, JOptionPane.INFORMATION_MESSAGE);
 				break;
 
 			case 1: // can offer only one appointment
@@ -228,14 +232,13 @@ public class Library {
 				putStringQuerryInTab(otherUsers, selectQuerry, "suSuivi");
 
 				// Choice of the user
-				char answer;
-				Ecran.afficherln("Vous ne pouvez proposer un rendez-vous qu'à l'utilisateur " + otherUsers[0] + ".");
-				Ecran.afficher("Souhaitez-vous le faire ? [Y/N] ");
-				answer = Clavier.saisirChar();
-				if(answer == 'Y') {
+				int answer;
+				showMessage = "Vous ne pouvez proposer un rendez-vous qu'à l'utilisateur " + otherUsers[0] + ".\n";
+				showMessage += "Souhaitez-vous le faire ?";
+				answer = boxMessage.showConfirmDialog(null, showMessage, boxTitle, JOptionPane.YES_NO_OPTION);
+				if(answer == JOptionPane.OK_OPTION) {
 					indexUserToMeet = 0;
 				}
-				Ecran.sautDeLigne();
 				BD.fermerResultat(selectQuerry);
 				break;
 
@@ -245,18 +248,17 @@ public class Library {
 				putStringQuerryInTab(otherUsers, selectQuerry, "suSuivi");
 
 				// Choice of the user
-				Ecran.afficherln("Voici la liste des utilisateurs auxquels vous pouvez proposer un rendez-vous:");
-				Ecran.afficherln(" 0 - Personne");
+				showMessage = "Voici la liste des utilisateurs auxquels vous pouvez proposer un rendez-vous:\n";
+				showMessage += " 0 - Personne\n";
 				for(int i=0; i<nbFollowedUsers; i++) {
-					Ecran.afficherln(" " + (i+1) + " - " + otherUsers[i]);
+					showMessage += " " + (i+1) + " - " + otherUsers[i] + "\n";
 				}
 				do {
 					if(indexUserToMeet > nbFollowedUsers) {
-						Ecran.afficherln("/!\\ ATTENTION ! Ce numéro n'est pas valide.");
+						showMessage += "/!\\ ATTENTION ! Ce numéro n'est pas valide.";
 					}
-					Ecran.afficher("Numéro de l'utilisateur que vous souhaitez rencontrer: ");
-					indexUserToMeet = Clavier.saisirInt();
-					Ecran.sautDeLigne();
+					showMessage += "Numéro de l'utilisateur que vous souhaitez rencontrer:";
+					indexUserToMeet = Integer.parseInt(boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE));
 				} while(indexUserToMeet > nbFollowedUsers);		
 				indexUserToMeet = indexUserToMeet - 1;
 				BD.fermerResultat(selectQuerry);
@@ -265,12 +267,13 @@ public class Library {
 
 		// Get an appointment
 		if(indexUserToMeet < 0) {
-			Ecran.afficherln("Vous n'avez proposé aucun rendez-vous.");
+			showMessage = "Vous n'avez proposé aucun rendez-vous.";
 		} else {
 			updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 0 WHERE suSuiveur = '" + currentUser + "' AND suSuivi = '" + otherUsers[indexUserToMeet] + "'");
 			BD.fermerResultat(updateQuery);
-			Ecran.afficherln("Vous avez proposé un rendez-vous à " + otherUsers[indexUserToMeet]);
+			showMessage = "Vous avez proposé un rendez-vous à " + otherUsers[indexUserToMeet];
 		}
+		boxMessage.showMessageDialog(null, showMessage, boxTitle, JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**
