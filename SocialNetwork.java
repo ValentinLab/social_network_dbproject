@@ -21,7 +21,7 @@ public class SocialNetwork {
 
 			// DEBUG
 			currentUser = "Valentin";
-			isConnected = true;
+			isConnected = false;
 
 		// Database connection
 		connection = BD.ouvrirConnexion("localhost", "reseau", "root", "");
@@ -38,11 +38,12 @@ public class SocialNetwork {
 				// Choices
 				switch(action){
 					case 0: // creation of an account
-						//Library.inscription(connection, NETWORKNAME);
+						Library.inscription(connection, NETWORKNAME);
 						break;
 					
 					case 1: // connection of the user
-						//Library.connexion(connection);
+						currentUser = Library.connexion(connection);
+						isConnected = true;
 						break;
 					
 					case 2: // stop the application

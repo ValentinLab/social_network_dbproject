@@ -13,6 +13,23 @@ public class Library {
 	// Private methods
 	// ------------------------------
 
+	public static String saisieCorrecte( String typeMenu, String typeSaisie,  int nbChar, JOptionPane menu){
+		String valeur;
+		do{
+			valeur = menu.showInputDialog(null, "Veuillez saisir votre " + typeSaisie + " : ", typeMenu + " - " + typeSaisie, JOptionPane.QUESTION_MESSAGE);
+			if(valeur == null){
+				return(null);
+			}
+			if(valeur.length() == 0){
+				menu.showMessageDialog(null, "Ce champ est obligatoire, veuillez recommencer la saisie : " , "ERREUR - " + typeSaisie + " obligatoire", JOptionPane.ERROR_MESSAGE);
+			}
+			if(valeur.length() > nbChar){
+				menu.showMessageDialog(null, "Votre " + typeSaisie + " ne peut pas excéder " + nbChar+ " caractéres, veuillez recommencer la saisie : " , "ERREUR - " + typeSaisie + " trop long !", JOptionPane.ERROR_MESSAGE);
+			}
+		} while(valeur.length() == 0 || valeur.length() > nbChar);
+		return(valeur);
+	}
+
 	/**
 	 * Put all string resultats from a query in a tab
 	 * 
@@ -48,7 +65,70 @@ public class Library {
 		}
 
 		return(isStopped);
-}
+	}
+
+	public static void inscription (int connexion, String nomReseauSocial) {
+		String motDePasse, login, sql, jvPref;
+		JOptionPane menuInscription = new JOptionPane();
+		login = saisieCorrecte("Inscription", "login", 30, menuInscription);
+		if(login == null){
+			return;
+		}
+		motDePasse = saisieCorrecte("Inscription","mot de passe", 10, menuInscription);
+		if(motDePasse == null){
+			return;
+		}
+		
+		
+		sql = "INSERT INTO utilisateur (utLogin, utPassword) VALUES ('" + login + "', '" + motDePasse + "')";	
+		// insertion des données dans la table utilisateur
+		int inscription = BD.executerUpdate(connexion, sql);
+		while (inscription == -1){
+			menuInscription.showMessageDialog(null, "Votre identifiant doit étre déjé pris, veuillez saisir en un autre : ", "ERREUR -  Identifiant déjé utilisé", JOptionPane.ERROR_MESSAGE);
+			login = saisieCorrecte("inscription", "login", 30, menuInscription);
+			if(login == null){
+				return;
+			}
+		}
+		
+		menuInscription.showMessageDialog(null, "Félicitations pour votre inscription sur " + nomReseauSocial + ". Nous allons maintenant vous demander des informations pour compléter votre profil ! " , "Renseignement complémentaire", JOptionPane.INFORMATION_MESSAGE);
+		jvPref = saisieCorrecte("Info complémentaire", "jeu vidéo préféré", 50, menuInscription);
+		if(jvPref == null){
+			return;
+		}
+		
+		sql = "INSERT INTO jeu (jeTitre, jeJoueur) VALUES (" + jvPref + ", " + login + ")";
+		// insertion des données dans la table jeu	
+		inscription = BD.executerUpdate(connexion, sql);
+		menuInscription.showMessageDialog(null, "Et voilé, votre profil est finalisé ! Nous vous souhaitons une agréable utilisation de " + nomReseauSocial + " ! ", "Inscription finalisée", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	public static String connexion(int connexion) {
+		String login, motDePasse;
+		JOptionPane menuConnexion = new JOptionPane();
+		login = saisieCorrecte("Connexion", "login", 30, menuConnexion);
+		if(login == null){
+			return "";
+		}
+		motDePasse = saisieCorrecte("Connexion", "mot de passe", 10, menuConnexion);
+		if(motDePasse == null){
+			return "";
+		}
+		//  tests des données avec celles présentes dans la base de donnée
+		int res = BD.executerSelect(connexion, "SELECT* FROM utilisateur");
+		while (BD.suivant(res)) {
+			if( BD.attributString(res,"utLogin").equals(login)){
+				if(BD.attributString(res,"utPassword").equals(motDePasse)){
+					menuConnexion.showMessageDialog(null, "Bonjour " + login + " ! ");
+					BD.suivant(res);
+					BD.fermerResultat(res);
+				}
+			}
+		}
+		BD.fermerResultat(res);
+
+		return login;
+	}
 
 	/**
 	 * Find users with same favorite games
