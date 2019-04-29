@@ -5,7 +5,7 @@
  * @author Fabian Devel, Valentin Perignon
  */
  
- //bibliothèque pour les boites de dialogues
+ //bibliothÃ©que pour les boites de dialogues
 import javax.swing.JOptionPane;
 
 public class SocialNetwork {
@@ -22,57 +22,28 @@ public class SocialNetwork {
 			return;
 		}
 		
-		/*do{
-			login = menuInscription.showInputDialog(null, "Veuillez saisir votre identifiant : ", "Inscription", JOptionPane.QUESTION_MESSAGE);
+		
+		sql = "INSERT INTO utilisateur (utLogin, utPassword) VALUES ('" + login + "', '" + motDePasse + "')";	
+		// insertion des donnÃ©es dans la table utilisateur
+		int inscription = BD.executerUpdate(connexion, sql);
+		while (inscription == -1){
+			menuInscription.showMessageDialog(null, "Votre identifiant doit Ã©tre dÃ©jÃ© pris, veuillez saisir en un autre : ", "ERREUR -  Identifiant dÃ©jÃ© utilisÃ©", JOptionPane.ERROR_MESSAGE);
+			login = saisieCorrecte("inscription", "login", 30, menuInscription);
 			if(login == null){
 				return;
 			}
-			if(login.length() == 0){
-				menuInscription.showMessageDialog(null, "Ce champ est obligatoire, veuillez recommencer la saisie : " , "ERREUR - Login obligatoire-", JOptionPane.ERROR_MESSAGE);
-			}
-			if(login.length() > 30){
-				menuInscription.showMessageDialog(null, "Votre login ne peut pas excéder 30 caractères, veuillez recommencer la saisie : " , "ERREUR - Login obligatoire-", JOptionPane.ERROR_MESSAGE);
-			}
-		} while(login.length() == 0 || login.length() > 30);
-		do{
-			motDePasse = menuInscription.showInputDialog(null, "Veuillez saisir votre mot de passe (10 caractères maximum)", "Inscription", JOptionPane.QUESTION_MESSAGE);
-			if(motDePasse == null){
-				return;
-			}
-			if(motDePasse.length() > 10){
-				menuInscription.showMessageDialog(null, "Votre mot de passe ne doit pas faire plus de 10 caractères. Saississez un autre mot de passe :" , "ERREUR - Mot de passe trop long", JOptionPane.ERROR_MESSAGE);
-			}
-			if(motDePasse.length() == 0){
-				menuInscription.showMessageDialog(null, "Ce champ est obligatoire, veuillez recommencer la saisie : " , "ERREUR - Mot de passe obligatoire ", JOptionPane.ERROR_MESSAGE);
-			}
-		}while(motDePasse.length() == 0 || motDePasse.length() > 10);*/
+		}
 		
-		sql = "INSERT INTO utilisateur (utLogin, utPassword) VALUES (" + login + ", " + motDePasse + ")";	
-		// insertion des données dans la table utilisateur
-		/*int inscription = BD.executerUpdate(connexion, sql);
-		while (inscription == -1){
-			menuInscription.showMessageDialog(null, "Votre identifiant doit être déjà pris, veuillez saisir en un autre : ", "ERREUR -  Identifiant déjà utilisé", JOptionPane.ERROR_MESSAGE);
-			login = verificationsSaisie("login", 30, menuInscription);
-		}*/
-		
-		menuInscription.showMessageDialog(null, "Félicitations pour votre inscription sur " + nomReseauSocial + ". Nous allons maintenant vous demander des informations pour compléter votre profil ! " , "Renseignement complémentaire", JOptionPane.INFORMATION_MESSAGE);
-		jvPref = saisieCorrecte("Info complémentaire", "jeu vidéo préféré", 50, menuInscription);
+		menuInscription.showMessageDialog(null, "FÃ©licitations pour votre inscription sur " + nomReseauSocial + ". Nous allons maintenant vous demander des informations pour complÃ©ter votre profil ! " , "Renseignement complÃ©mentaire", JOptionPane.INFORMATION_MESSAGE);
+		jvPref = saisieCorrecte("Info complÃ©mentaire", "jeu vidÃ©o prÃ©fÃ©rÃ©", 50, menuInscription);
 		if(jvPref == null){
 			return;
 		}
-		/*do{
-			jvPref = menuInscription.showInputDialog(null, "Quel est votre jeu vidéo préféré ? ", "Informations complémentaires", JOptionPane.QUESTION_MESSAGE);
-			if(jvPref == null){
-				return;
-			}
-			if(jvPref.length() == 0){
-				menuInscription.showMessageDialog(null, "Ce champ est obligatoire, veuillez recommencer la saisie : " , "ERREUR - Renseignement obligatoire ", JOptionPane.ERROR_MESSAGE);
-			}
-		}while(jvPref.length() == 0);*/
+		
 		sql = "INSERT INTO jeu (jeTitre, jeJoueur) VALUES (" + jvPref + ", " + login + ")";
-		// insertion des données dans la table jeu	
-		//inscription = BD.executerUpdate(connexion, sql);
-		menuInscription.showMessageDialog(null, "Et voilà, votre profil est finalisé ! Nous vous souhaitons une agréable utilisation de " + nomReseauSocial + " ! ", "Inscription finalisée", JOptionPane.INFORMATION_MESSAGE);
+		// insertion des donnÃ©es dans la table jeu	
+		inscription = BD.executerUpdate(connexion, sql);
+		menuInscription.showMessageDialog(null, "Et voilÃ©, votre profil est finalisÃ© ! Nous vous souhaitons une agrÃ©able utilisation de " + nomReseauSocial + " ! ", "Inscription finalisÃ©e", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	public static void connexion(int connexion) {
@@ -86,19 +57,20 @@ public class SocialNetwork {
 		if(motDePasse == null){
 			return;
 		}
-		//  tests des données avec celles présentes dans la base de donnée
-		/*int res = BD.executerSelect(connexion, "SELECT* FROM utilisateur");
+		//  tests des donnÃ©es avec celles prÃ©sentes dans la base de donnÃ©e
+		int res = BD.executerSelect(connexion, "SELECT* FROM utilisateur");
 		while (BD.suivant(res)) {
 			if( BD.attributString(res,"utLogin").equals(login)){
 				if(BD.attributString(res,"utPassword").equals(motDePasse)){
 					menuConnexion.showMessageDialog(null, "Bonjour " + login + " ! ");
-					BD.suivant(res) = false;
+					BD.suivant(res);
+					BD.fermerResultat(res);
 				}
 			}
 		}
 		BD.fermerResultat(res);
-		*/
-		String[] choixConnexion = {"Rechercher des joueurs", "Gérer mon compte",  "Retour"};
+		
+		String[] choixConnexion = {"Rechercher des joueurs", "GÃ©rer mon compte",  "Retour"};
 		int action = menuConnexion.showOptionDialog(null, "Que voulez-vous faire ?", "Menu Connexion", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, choixConnexion, choixConnexion[2]);
 		switch(action){
 			case 0 : {
@@ -128,7 +100,7 @@ public class SocialNetwork {
 				menu.showMessageDialog(null, "Ce champ est obligatoire, veuillez recommencer la saisie : " , "ERREUR - " + typeSaisie + " obligatoire", JOptionPane.ERROR_MESSAGE);
 			}
 			if(valeur.length() > nbChar){
-				menu.showMessageDialog(null, "Votre " + typeSaisie + " ne peut pas excéder " + nbChar+ " caractères, veuillez recommencer la saisie : " , "ERREUR - " + typeSaisie + " trop long !", JOptionPane.ERROR_MESSAGE);
+				menu.showMessageDialog(null, "Votre " + typeSaisie + " ne peut pas excÃ©der " + nbChar+ " caractÃ©res, veuillez recommencer la saisie : " , "ERREUR - " + typeSaisie + " trop long !", JOptionPane.ERROR_MESSAGE);
 			}
 		} while(valeur.length() == 0 || valeur.length() > nbChar);
 		return(valeur);
@@ -136,7 +108,7 @@ public class SocialNetwork {
 	
 	public static boolean arretAppli (){
 		boolean arret = false;
-		int n = JOptionPane.showConfirmDialog(null, "Voulez-vous vraiment quitter l'application ?", "A bientôt ! ", JOptionPane.YES_NO_OPTION);
+		int n = JOptionPane.showConfirmDialog(null, "Voulez-vous vraiment quitter l'application ?", "A bientÃ©t ! ", JOptionPane.YES_NO_OPTION);
 		if(n == 0){
 			arret = true;
 		}
@@ -144,11 +116,12 @@ public class SocialNetwork {
 	}
 	
 	public static void main(String[] args) {
-		/**********  Variables pour la connexion à la base de donnée **************/
+		/**********  Variables pour la connexion Ã© la base de donnÃ©e **************/
 		
-		String loginAdmin = "devel";
-		String nomBD = loginAdmin + "_BD";
-		String adresseReseau = "172.20.128.64";
+		String loginAdmin = "root";
+		String passAdmin = "";
+		String nomBD = "reseau";
+		String adresseReseau = "localhost";
 		int connexion = 0;
 		
 		/***********Variables programme***********/
@@ -157,27 +130,27 @@ public class SocialNetwork {
 		JOptionPane menuPrincipal = new JOptionPane();
 		boolean arret = false;
 		
-		//Connexion à la base de donnée
-		//int connexion = BD.ouvrirConnexion(adresseReseau, nomBD, loginAdmin, loginAdmin);
+		//Connexion Ã© la base de donnÃ©e
+		connexion = BD.ouvrirConnexion(adresseReseau, nomBD, loginAdmin, passAdmin);
 		
 		do{
 			String[] choix = {"Inscription", "Connexion",  "Quitter"};
 			action = menuPrincipal.showOptionDialog(null, "Choississez votre action ", "Menu Principal", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, choix, choix[2]);
 			
 			switch(action){
-				//Inscription au réseau social
+				//Inscription au rÃ©seau social
 				case 0 : {
 					inscription(connexion, nomReseauSocial);
 				}
 				break;	
 				
-				//Connexion au réseau social
+				//Connexion au rÃ©seau social
 				case 1 : {
 					connexion(connexion);
 				}
 				break;
 				
-				// Arrêt de l'application
+				// ArrÃ©t de l'application
 				case 2 : {
 					arret = arretAppli();
 				}
