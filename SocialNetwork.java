@@ -1,3 +1,5 @@
+import java.io.Console;
+
 import javax.swing.JOptionPane;
 
 /**
@@ -30,54 +32,61 @@ public class SocialNetwork {
 		do{
 			if(!isConnected) { // the user is not connected
 				// Display variables
-				String[] choicesMessage = {"S'inscrire", "Se connecter",  "Quitter"};
+				String[] choicesMessage = {"Quitter", "Se connecter", "S'inscrire"};
 
 				// Display
-				int action = mainMenu.showOptionDialog(null, "Choississez votre action :", NETWORKNAME, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, choicesMessage, choicesMessage[2]);
+				int action = mainMenu.showOptionDialog(null, "Choississez votre action :", NETWORKNAME, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, choicesMessage, choicesMessage[0]);
 
 				// Choices
 				switch(action){
-					case 0: // creation of an account
+					case 2: // creation of an account
 						Library.inscription(connection, NETWORKNAME);
 						break;
 					
 					case 1: // connection of the user
-						currentUser = Library.connexion(connection);
-						isConnected = true;
+						String[] connectionAnswer = Library.connexion(connection);
+						if(connectionAnswer[0].equals("true")) {
+							isConnected = true;
+							currentUser = connectionAnswer[1];
+						}
 						break;
 					
-					case 2: // stop the application
+					case 0: // stop the application
 						isStopped = Library.stopApp();
 					break;
 				}
 			} else {
 				// Display variables
-				String[] choicesMessage = {"Répondre à un rendez-vous", "Proposer un rendez-vous", "Suivre un utilisateur", "Rechercher un utilisateur", "Quitter"};
+				String[] choicesMessage = {"Se déconnecter","Répondre à un rendez-vous", "Proposer un rendez-vous", "Suivre un utilisateur", "Rechercher un utilisateur", "Insérer un jeu favoris"};
 				String textMessage = "Bienvenue " + currentUser + ".\nQue souhaitez-vous faire ?";
 
 				// Display
-				int action = mainMenu.showOptionDialog(null, textMessage, NETWORKNAME, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, choicesMessage, choicesMessage[4]);
+				int action = mainMenu.showOptionDialog(null, textMessage, NETWORKNAME, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, choicesMessage, choicesMessage[0]);
 
 				// Choices
 				switch(action){
-					case 3: // search
+					case 5: // new favorite game
+						Library.insertFavoriteVideoGames(connection, currentUser);
+						break;
+						
+					case 4: // search
 						Library.searchUsers(connection, currentUser);
 						break;
 					
-					case 2: // follow
+					case 3: // follow
 						Library.followUser(connection, currentUser);
 						break;
 
-					case 1: // get appointment
+					case 2: // get appointment
 						Library.getAppointment(connection, currentUser);
 						break;
 
-					case 0: // answer appointment
+					case 1: // answer appointment
 						Library.answerAppointment(connection, currentUser);
 						break;
 					
-					case 4: // stop the application
-						isStopped = Library.stopApp();
+					case 0: // stop the application
+						isConnected = false;
 						break;
 				}
 			}
