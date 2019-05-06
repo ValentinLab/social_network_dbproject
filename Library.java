@@ -431,35 +431,30 @@ public class Library {
 		}
 
 		// Get an appointment
-		if (indexUserToMeet < 0) {
-			showMessage = "Vous n'avez proposé aucun rendez-vous.";
-		} else {
-			// Check if the appointment already exists
-			selectQuerry = BD.executerSelect(connection, "SELECT * FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suSuivi = '" + otherUsers[indexUserToMeet] + "'");
-			if(BD.suivant(selectQuerry)) {
-				String stateRdv = "";
-				switch(BD.attributInt(selectQuerry, "suRDV")) {
-					case 0:
-						stateRdv = "l'utilisateur n'a pas encore répondu à ce rendez-vous";
-						break;
-					case 1:
-						stateRdv = "l'utilisateur a accepté le rendez-vous";
-						break;
-					case -1:
-						stateRdv = "l'utilisateur a refusé le rendez-vous";
-						break;
-				}
-
-				showMessage = "Vous avez déjà proposé un rendez-vous à " + otherUsers[indexUserToMeet] + ", " + stateRdv + ".";
-			} else {	
-				updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 0 WHERE suSuiveur = '" + currentUser
-					+ "' AND suSuivi = '" + otherUsers[indexUserToMeet] + "'");
-				BD.fermerResultat(updateQuery);
-				showMessage = "Vous avez proposé un rendez-vous à " + otherUsers[indexUserToMeet];
+		// Check if the appointment already exists
+		selectQuerry = BD.executerSelect(connection, "SELECT * FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suSuivi = '" + appointmentUser + "'");
+		if(BD.suivant(selectQuerry)) {
+			String stateRdv = "";
+			switch(BD.attributInt(selectQuerry, "suRDV")) {
+				case 0:
+					stateRdv = "l'utilisateur n'a pas encore répondu à ce rendez-vous";
+					break;
+				case 1:
+					stateRdv = "l'utilisateur a accepté le rendez-vous";
+					break;
+				case -1:
+					stateRdv = "l'utilisateur a refusé le rendez-vous";
+					break;
 			}
-			BD.fermerResultat(selectQuerry);
-			
+
+			showMessage = "Vous avez déjà proposé un rendez-vous à " + appointmentUser + ", " + stateRdv + ".";
+		} else {	
+			updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 0 WHERE suSuiveur = '" + currentUser
+				+ "' AND suSuivi = '" + appointmentUser + "'");
+			BD.fermerResultat(updateQuery);
+			showMessage = "Vous avez proposé un rendez-vous à " + appointmentUser;
 		}
+		BD.fermerResultat(selectQuerry);	
 		boxMessage.showMessageDialog(null, showMessage, boxTitle, JOptionPane.INFORMATION_MESSAGE);
 	}
 
