@@ -112,9 +112,11 @@ public class Library {
 		// Check if the login already exists in the DB
 		sql = "SELECT utLogin FROM utilisateur WHERE utLogin = '" + login + "'";
 		inscription = BD.executerSelect(connexion, sql);
-		while(BD.suivant(inscription)) {
+		while (BD.suivant(inscription)) {
 			// display
-			menuInscription.showMessageDialog(null, "Votre identifiant n'est pas disponible, veuillez en saisir un autre :", "ERREUR -  Identifiant déjé utilisé", JOptionPane.ERROR_MESSAGE);
+			menuInscription.showMessageDialog(null,
+					"Votre identifiant n'est pas disponible, veuillez en saisir un autre :",
+					"ERREUR -  Identifiant déjé utilisé", JOptionPane.ERROR_MESSAGE);
 
 			// new entry
 			login = saisieCorrecte("inscription", "login", 30, menuInscription);
@@ -135,13 +137,19 @@ public class Library {
 		BD.executerUpdate(connexion, sql);
 
 		// Final display
-		menuInscription.showMessageDialog(null, "Félicitations pour votre inscription sur " + nomReseauSocial + ". Nous allons maintenant vous demander des informations pour compléter votre profil ! ", "Renseignement complémentaire", JOptionPane.INFORMATION_MESSAGE);
+		menuInscription.showMessageDialog(null,
+				"Félicitations pour votre inscription sur " + nomReseauSocial
+						+ ". Nous allons maintenant vous demander des informations pour compléter votre profil ! ",
+				"Renseignement complémentaire", JOptionPane.INFORMATION_MESSAGE);
 
 		// Favorite video games
 		insertFavoriteVideoGames(connexion, login);
 
 		// Success display
-		menuInscription.showMessageDialog(null, "Et voilé, votre profil est finalisé ! Nous vous souhaitons une agréable utilisation de " + nomReseauSocial + " ! ", "Inscription finalisée", JOptionPane.INFORMATION_MESSAGE);
+		menuInscription.showMessageDialog(null,
+				"Et voilé, votre profil est finalisé ! Nous vous souhaitons une agréable utilisation de "
+						+ nomReseauSocial + " ! ",
+				"Inscription finalisée", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**
@@ -157,7 +165,7 @@ public class Library {
 		int querry;
 
 		// Favorite video game
-		favoriteVG = saisieCorrecte("Votre jeu vidéo favoris", "jeu vidéo préféré :", 50, menuInscription);
+		favoriteVG = saisieCorrecte("Votre jeu vidéo favoris", "jeu vidéo préféré", 50, menuInscription);
 		if (favoriteVG == null)
 			return;
 		sql = "INSERT INTO jeu (jeTitre, jeJoueur) VALUES ('" + favoriteVG + "', '" + currentUser + "')";
@@ -187,8 +195,9 @@ public class Library {
 			return answer;
 
 		// Treatment
-		res = BD.executerSelect(connexion, "SELECT * FROM utilisateur WHERE utLogin = '" + login + "' AND utPassword = '" + motDePasse + "'");
-		if(BD.suivant(res)) {
+		res = BD.executerSelect(connexion,
+				"SELECT * FROM utilisateur WHERE utLogin = '" + login + "' AND utPassword = '" + motDePasse + "'");
+		if (BD.suivant(res)) {
 			answer[0] = "true";
 			answer[1] = login;
 		}
@@ -237,7 +246,8 @@ public class Library {
 		favoriteGames = new String[nbFavoriteGames];
 		switch (nbFavoriteGames) {
 		case 0: // no favorite game
-			boxMessage.showMessageDialog(null, "Vous n'aimez aucun jeu pour le moment.", boxTitle, JOptionPane.INFORMATION_MESSAGE);
+			boxMessage.showMessageDialog(null, "Vous n'aimez aucun jeu pour le moment.", boxTitle,
+					JOptionPane.INFORMATION_MESSAGE);
 			choice = 0;
 			break;
 
@@ -437,10 +447,31 @@ public class Library {
 		if (indexUserToMeet < 0) {
 			showMessage = "Vous n'avez proposé aucun rendez-vous.";
 		} else {
-			updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 0 WHERE suSuiveur = '" + currentUser
+			// Check if the appointment already exists
+			selectQuerry = BD.executerSelect(connection, "SELECT * FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suSuivi = '" + otherUsers[indexUserToMeet] + "'");
+			if(BD.suivant(selectQuerry)) {
+				String stateRdv = "";
+				switch(BD.attributInt(selectQuerry, "suRDV")) {
+					case 0:
+						stateRdv = "l'utilisateur n'a pas encore répondu à ce rendez-vous";
+						break;
+					case 1:
+						stateRdv = "l'utilisateur a accepté le rendez-vous";
+						break;
+					case -1:
+						stateRdv = "l'utilisateur a refusé le rendez-vous";
+						break;
+				}
+
+				showMessage = "Vous avez déjà proposé un rendez-vous à " + otherUsers[indexUserToMeet] + ", " + stateRdv + ".";
+			} else {	
+				updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 0 WHERE suSuiveur = '" + currentUser
 					+ "' AND suSuivi = '" + otherUsers[indexUserToMeet] + "'");
-			BD.fermerResultat(updateQuery);
-			showMessage = "Vous avez proposé un rendez-vous à " + otherUsers[indexUserToMeet];
+				BD.fermerResultat(updateQuery);
+				showMessage = "Vous avez proposé un rendez-vous à " + otherUsers[indexUserToMeet];
+			}
+			BD.fermerResultat(selectQuerry);
+			
 		}
 		boxMessage.showMessageDialog(null, showMessage, boxTitle, JOptionPane.INFORMATION_MESSAGE);
 	}
