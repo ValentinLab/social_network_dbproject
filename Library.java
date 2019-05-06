@@ -425,7 +425,7 @@ public class Library {
 
 			// Choice of the user
 			showMessage = "Voici la liste des utilisateurs auxquels vous pouvez proposer un rendez-vous:\n";
-			appointmentUser = (String)boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE, null, otherUsers, otherUsers[nbFollowedUsers]);
+			appointmentUser = (String)boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE, null, otherUsers, otherUsers[nbFollowedUsers-1]);
 			BD.fermerResultat(selectQuerry);
 			break;
 		}
