@@ -227,7 +227,6 @@ public class Library {
 		JOptionPane boxMessage = new JOptionPane();
 		String boxTitle = "Recherche d'utilisateurs";
 		String showMessage;
-		String answerMessString;
 
 		// Querry (get the number of users followed by the current user with no
 		// appointment)
@@ -274,16 +273,13 @@ public class Library {
 
 			// Choice of the game
 			showMessage = "";
-			answerMessString = "";
 			showMessage = "Voici la liste des jeux que vous aimez:\n";
 			for (int i = 0; i < nbFavoriteGames; i++) {
 				showMessage += " " + (i + 1) + " - " + favoriteGames[i] + "\n";
 			}
-			showMessage += "\nNuméro du jeu pour lequel vous souhaitez trouver des joueurs aimant le même jeu:";
-			answerMessString = boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE);
-			if (answerMessString == null || answerMessString.equals(""))
+			choice = (int)boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE, null, favoriteGames, favoriteGames[nbFavoriteGames-1]);
+			if (choice == 0)
 				return;
-			choice = Integer.parseInt(answerMessString);
 			break;
 		}
 
