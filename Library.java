@@ -448,7 +448,7 @@ public class Library {
 			}
 
 			showMessage = "Vous avez déjà proposé un rendez-vous à " + appointmentUser + ", " + stateRdv + ".";
-		} else if (appointmentUser.equals(null)){
+		} else if (appointmentUser == null){
 			return;
 		} else {	
 			updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 0 WHERE suSuiveur = '" + currentUser
