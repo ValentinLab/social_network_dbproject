@@ -432,7 +432,7 @@ public class Library {
 
 		// Get an appointment
 		// Check if the appointment already exists
-		selectQuerry = BD.executerSelect(connection, "SELECT * FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suSuivi = '" + appointmentUser + "' AND suRDV IS NOT NULL AND suRDV != -1");
+		selectQuerry = BD.executerSelect(connection, "SELECT * FROM suivi WHERE suSuiveur = '" + currentUser + "' AND suSuivi = '" + appointmentUser + "' AND suRDV IS NOT NULL AND suRDV != 0");
 		if(BD.suivant(selectQuerry)) {
 			String stateRdv = "";
 			switch(BD.attributInt(selectQuerry, "suRDV")) {
