@@ -45,7 +45,7 @@ public class Library {
 			if (valeur.length() > nbChar) {
 				menu.showMessageDialog(null,
 						"Votre " + typeSaisie + " ne peut pas excéder " + nbChar
-								+ " caractéres, veuillez recommencer la saisie : ",
+								+ " caractères, veuillez recommencer la saisie : ",
 						"ERREUR - " + typeSaisie + " trop long !", JOptionPane.ERROR_MESSAGE);
 			}
 		} while (valeur.length() == 0 || valeur.length() > nbChar);
@@ -141,7 +141,7 @@ public class Library {
 		insertFavoriteVideoGames(connexion, login);
 
 		// Success display
-		menuInscription.showMessageDialog(null, "Et voilé, votre profil est finalisé ! Nous vous souhaitons une agréable utilisation de " + nomReseauSocial + " ! ", "Inscription finalisée", JOptionPane.INFORMATION_MESSAGE);
+		menuInscription.showMessageDialog(null, "Et voilà, votre profil est finalisé ! Nous vous souhaitons une agréable utilisation de " + nomReseauSocial + " ! ", "Inscription finalisée", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**
@@ -157,7 +157,7 @@ public class Library {
 		int querry;
 
 		// Favorite video game
-		favoriteVG = saisieCorrecte("Votre jeu vidéo favoris", "jeu vidéo préféré :", 50, menuInscription);
+		favoriteVG = saisieCorrecte("Votre jeu vidéo favori", "jeu vidéo préféré :", 50, menuInscription);
 		if (favoriteVG == null)
 			return;
 		sql = "INSERT INTO jeu (jeTitre, jeJoueur) VALUES ('" + favoriteVG + "', '" + currentUser + "')";
@@ -250,7 +250,7 @@ public class Library {
 
 			// Choose to search other users
 			int answer = boxMessage.showConfirmDialog(null,
-					"Votre jeu favoris est " + favoriteGames[0]
+					"Votre jeu favori est " + favoriteGames[0]
 							+ ". Voulez-vous trouver des utilisateurs qui aiment ce jeu ?",
 					boxTitle, JOptionPane.YES_NO_OPTION);
 			if (answer == 1) {
@@ -320,6 +320,7 @@ public class Library {
 		String showMessage;
 
 		// Login of user to follow entry
+
 		do {
 			showMessage = "";
 			if (otherUser.equals(currentUser)) {
@@ -364,6 +365,7 @@ public class Library {
 	public static void getAppointment(int connection, String currentUser) {
 		// Variables
 		String[] otherUsers;
+		String appointmentUser = "";
 		int nbFollowedUsers;
 		int indexUserToMeet = -1;
 		int selectQuerry;
@@ -416,32 +418,16 @@ public class Library {
 
 			// Choice of the user
 			showMessage = "Voici la liste des utilisateurs auxquels vous pouvez proposer un rendez-vous:\n";
-			showMessage += " 0 - Personne\n";
-			for (int i = 0; i < nbFollowedUsers; i++) {
-				showMessage += " " + (i + 1) + " - " + otherUsers[i] + "\n";
-			}
-			do {
-				if (indexUserToMeet > nbFollowedUsers) {
-					showMessage += "/!\\ ATTENTION ! Ce numéro n'est pas valide.";
-				}
-				showMessage += "Numéro de l'utilisateur que vous souhaitez rencontrer:";
-				indexUserToMeet = Integer.parseInt(
-						boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE));
-			} while (indexUserToMeet > nbFollowedUsers);
-			indexUserToMeet = indexUserToMeet - 1;
+			appointmentUser = (String)boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE, null, otherUsers, otherUsers[nbFollowedUsers]);
 			BD.fermerResultat(selectQuerry);
 			break;
 		}
 
 		// Get an appointment
-		if (indexUserToMeet < 0) {
-			showMessage = "Vous n'avez proposé aucun rendez-vous.";
-		} else {
-			updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 0 WHERE suSuiveur = '" + currentUser
-					+ "' AND suSuivi = '" + otherUsers[indexUserToMeet] + "'");
-			BD.fermerResultat(updateQuery);
-			showMessage = "Vous avez proposé un rendez-vous à " + otherUsers[indexUserToMeet];
-		}
+		updateQuery = BD.executerUpdate(connection, "UPDATE suivi SET suRDV = 0 WHERE suSuiveur = '" + currentUser
+				+ "' AND suSuivi = '" + appointmentUser + "'");
+		BD.fermerResultat(updateQuery);
+		showMessage = "Vous avez proposé un rendez-vous à " + appointmentUser;
 		boxMessage.showMessageDialog(null, showMessage, boxTitle, JOptionPane.INFORMATION_MESSAGE);
 	}
 
