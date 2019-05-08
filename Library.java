@@ -202,7 +202,15 @@ public class Library {
 
 		// Display
 		if (answer[0] == "true") {
-			menuConnexion.showMessageDialog(null, "Bonjour " + login + " !");
+			// Get notifications
+			int nbNotifications;
+			res = BD.executerSelect(connexion, "SELECT COUNT(*) AS NbNotifications FROM suivi WHERE suSuivi = '" + answer[1] + "' AND suRDV = 0");
+			BD.suivant(res);
+			nbNotifications = BD.attributInt(res, "NbNotifications");
+			BD.fermerResultat(res);
+
+			// Welcome and notifications
+			menuConnexion.showMessageDialog(null, "Bonjour " + login + " !\nVous avez " + nbNotifications + " rendez-vous en attente de réponse.");
 		} else {
 			menuConnexion.showMessageDialog(null, "Mauvais mot de passe ou login !");
 		}
