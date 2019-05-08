@@ -525,8 +525,11 @@ public class Library {
 					showMessage += "/!\\ ATTENTION Le numéro n'est pas valide.";
 				}
 				showMessage += "Numéro de l'utilisateur auquel vous souhaitez répondre: ";
-				indexUser = Integer.parseInt(
-						boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE));
+				String answerStr;
+				answerStr = boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE);
+				if(answerStr == null)
+					return;
+				indexUser = Integer.parseInt(answerStr);
 			} while (indexUser > nbAppointmentUsers);
 			break;
 		}
