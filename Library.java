@@ -229,7 +229,7 @@ public class Library {
 		String[] favoriteGames;
 		int nbFavoriteGames;
 		int selectQuerry;
-		int choice = 1;
+		String answerStr = "";
 
 		// Display variables
 		JOptionPane boxMessage = new JOptionPane();
@@ -252,7 +252,7 @@ public class Library {
 		case 0: // no favorite game
 			boxMessage.showMessageDialog(null, "Vous n'aimez aucun jeu pour le moment.", boxTitle,
 					JOptionPane.INFORMATION_MESSAGE);
-			choice = 0;
+			answerStr = null;
 			break;
 
 		case 1: // only one favorite game
@@ -268,7 +268,9 @@ public class Library {
 							+ ". Voulez-vous trouver des utilisateurs qui aiment ce jeu ?",
 					boxTitle, JOptionPane.YES_NO_OPTION);
 			if (answer == 1) {
-				choice = 0;
+				answerStr = favoriteGames[0];
+			} else {
+				answerStr = null;
 			}
 			break;
 
@@ -285,21 +287,22 @@ public class Library {
 			for (int i = 0; i < nbFavoriteGames; i++) {
 				showMessage += " " + (i + 1) + " - " + favoriteGames[i] + "\n";
 			}
-			choice = (int)boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE, null, favoriteGames, favoriteGames[nbFavoriteGames-1]);
-			if (choice == 0)
+			
+			answerStr = (String)boxMessage.showInputDialog(null, showMessage, boxTitle, JOptionPane.QUESTION_MESSAGE, null, favoriteGames, favoriteGames[nbFavoriteGames-1]);
+			if (answerStr == null)
 				return;
 			break;
 		}
 
 		// Search of users
-		if (choice > 0) {
+		if(answerStr != null) {
 			// Querry (get the other users)
 			selectQuerry = BD.executerSelect(connection, "SELECT jeJoueur FROM jeu WHERE jeTitre = '"
-					+ favoriteGames[choice - 1] + "' AND jeJoueur != '" + currentUser + "'");
+				+ answerStr + "' AND jeJoueur != '" + currentUser + "'");
 
 			// Display of users
 			if (BD.suivant(selectQuerry)) {
-				showMessage = "Liste des joueurs appréciant " + favoriteGames[choice - 1] + " :\n";
+				showMessage = "Liste des joueurs appréciant " + answerStr + " :\n";
 				do {
 					showMessage += " - " + BD.attributString(selectQuerry, "jeJoueur") + "\n";
 				} while (BD.suivant(selectQuerry));
@@ -307,10 +310,10 @@ public class Library {
 			} else {
 				showMessage = "Il n'y a aucun autre joueur...";
 			}
+			boxMessage.showMessageDialog(null, showMessage, boxTitle, JOptionPane.INFORMATION_MESSAGE);
 		} else {
-			showMessage = "Vous n'avez effectué aucune recherche.";
+			boxMessage.showMessageDialog(null, "Aucun utilisateur suivi...", boxTitle, JOptionPane.INFORMATION_MESSAGE);
 		}
-		boxMessage.showMessageDialog(null, showMessage, boxTitle, JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**

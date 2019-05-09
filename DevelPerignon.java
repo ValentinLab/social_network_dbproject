@@ -6,7 +6,7 @@ import javax.swing.JOptionPane;
  * @author Fabian Devel, Valentin Perignon
  */
 
-public class SocialNetwork {
+public class DevelPerignon {
 	public static void main(String[] args) {
 
 		// Variables
